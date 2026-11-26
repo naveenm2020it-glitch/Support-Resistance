@@ -2,7 +2,7 @@
 
 **Decision date:** 2026-11-26  
 **User decision:** No NSE Data & Analytics subscription; use free official source reports where permitted.  
-**Status:** Selected as the zero-subscription design direction. Actual data use remains subject to NSE's applicable terms, eligibility and any required written approval.  
+**Status:** Selected as the zero-subscription design direction. A manual local-import workflow is the technical target, but dataset retention and ML use remain gated by NSE's written permission/terms for this trading-oriented project.  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`
 
 ## 1. Executive decision
@@ -19,7 +19,7 @@ This is not a real-time or intraday feed. The free/public report pages are not a
 
 No NSE public-page scraper, reverse-engineered endpoint, cookie/session workaround or automatic polling is allowed in this mode. Do not claim live feed delivery.
 
-**Important legal eligibility gate:** NSE's current disclaimer states that no-cost research-oriented data up to an aggregate 2 GB is restricted to individuals from accredited academic institutions, recognised research organisations and think tanks, and excludes commercial, speculative or investigative purposes. The NSE Research Initiative page separately states that research data is strictly for academic and non-commercial use. A trading/signal product or speculative use cannot assume eligibility for this route. Obtain written permission/clarification from NSE before using the data for such a purpose. The public presence of a downloadable file is not by itself a licence to automate its collection, republish it or use it without restriction.
+**Important legal eligibility gate:** NSE's research-data programme is expressly for academic and non-commercial use. The NSE Data Sharing Policy's first basket lists certain equity-derivatives contract-wise price/volume and daily/monthly report archives as freely available research data, while its separate voluminous-data basket (>2 GB) lists historical EOD and tick-by-tick history as chargeable. This is a research-policy classification, not a general-purpose free licence for a private trading/signal product. The project has not established academic eligibility or a licence for trading-related ML. NSE's website Terms of Use also restrict copying/storage without prior written permission and prohibit systematic or automated collection. Before retaining public NSE downloads in a dataset or training a trading model, obtain written confirmation from NSE that the precise source, storage, ML/trading purpose and output use are permitted.
 
 ## 2. Official zero-subscription source inventory
 
@@ -71,11 +71,11 @@ Accordingly, the zero-subscription mode must disable or label unavailable: order
 Official NSE references reviewed on 2026-11-26:
 
 - NSE's [Data List Under the NSE Data Sharing Policy](https://nsearchives.nseindia.com/web/sites/default/files/inline-files/Data%20list%20under%20NSE%20Data%20Sharing%20Policy%20for%20Research%20and%20Analysis_20250728.pdf) identifies the first-basket research reports and the separate >2 GB chargeable voluminous-data category.
-- NSE's [Disclaimer](https://www.nseindia.com/static/nse-disclaimer), updated 6 November 2026, says no-cost research-oriented data up to the aggregate 2 GB threshold is limited to eligible accredited academic institutions, recognised research organisations and think tanks, and excludes commercial, speculative or investigative purposes. It also allows NSE to require an NDA and periodic usage/progress reports.
+- NSE's Data Sharing Policy classifies data for non-commercial academic research and lists equity-derivatives contract-wise price/volume and daily/monthly report archives in its first, freely available research-data basket. It separately places voluminous historical EOD and tick-by-tick datasets above 2 GB in a chargeable basket.
 - NSE's [Research Initiatives](https://www.nseindia.com/static/research/research-initiatives) page says research data is strictly limited to academic and non-commercial use and provides the research request process at `nseri@nse.co.in`.
-- NSE's [Terms of Use](https://www.nseindia.com/static/nse-terms-of-use) prohibit systematic or automated data collection (including scraping, data mining, extraction and harvesting) on or in relation to its website/mobile application. The terms also restrict copying, storage, redistribution and certain uses of website content.
+- NSE's [Terms of Use](https://www.nseindia.com/static/nse-terms-of-use), clauses 8–9, restrict copying/storage and redistribution of website content without prior written permission (subject to the terms' download wording) and prohibit systematic or automated data collection, including scraping, data mining, extraction and harvesting.
 
-The project must not assume that free web visibility grants permission for scheduled automated downloads, republishing, redistribution, commercial use, speculative use or ML training for a trading product. If the intended use is a trading/signal system, ask NSE for written confirmation of the permitted data source and use before ingesting their reports into that workflow.
+The project must not assume that a public download button grants permission for bulk retention, dataset creation, ML training or trading/signal use. No automated feed or public-page polling will be built. For this intended seller-intelligence/trading use, obtain written NSE confirmation covering data acquisition, local/server storage, ML training, derived signals and dashboard display before creating a persistent market-data dataset. Until then, source files may be inspected only where the terms permit and must not be treated as approved model-training data.
 
 For an eligible academic/non-commercial research project, the NSE research page provides a Data Seeking Request Form and the contact `nseri@nse.co.in`. Approval/eligibility is not assumed.
 
@@ -99,10 +99,10 @@ Do not proceed to ML until the dataset has enough valid sessions/contracts, cons
 
 - [x] User selected the no-subscription/free-source direction.
 - [x] Official NSE EOD report families and official index history identified.
-- [x] Distinction between public EOD reports, research-only access and >2 GB chargeable historical datasets documented.
+- [x] Distinction between public EOD report listings, the academic/non-commercial research-data policy and >2 GB chargeable voluminous history documented.
 - [x] No-scraping restriction and research-use eligibility gate documented.
 - [x] EOD-only ML and analysis capabilities distinguished from unavailable order-flow features.
-- [ ] Confirm that the intended project use is permitted under NSE terms; if academic research, confirm eligible institution/status and receive required approval.
+- [ ] Obtain written confirmation from NSE that the intended trading/seller-intelligence use, persistent data storage and ML training on the identified report files are permitted. The academic/non-commercial research route is not assumed to cover this project.
 - [ ] Obtain a permitted sample of each proposed EOD source and inspect actual field schemas, date coverage, units and null semantics.
 - [ ] Decide which EOD reports are mandatory versus supplementary based on the verified samples.
 - [ ] Verify the available historical range and size for the selected report families.
