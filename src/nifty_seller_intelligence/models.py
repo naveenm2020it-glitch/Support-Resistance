@@ -4,7 +4,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import Enum
+import math
 from typing import FrozenSet, Optional
+
+
+def _is_sha256(value: str) -> bool:
+    return isinstance(value, str) and len(value) == 64 and all(char in "0123456789abcdefABCDEF" for char in value)
 
 
 class AvailabilityStatus(str, Enum):
@@ -41,14 +46,22 @@ class ReportManifest:
     validation_messages: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if self.provider.upper() != "NSE":
+        if self.provider.strip().upper() != "NSE":
             raise ValueError("This project manifest currently accepts NSE reports only")
-        if not self.original_filename or "/" in self.original_filename or "\\\\" in self.original_filename:
+        if not self.report_type.strip():
+            raise ValueError("report_type cannot be empty")
+        if not self.source_url.strip():
+            raise ValueError("source_url or authorised source identifier cannot be empty")
+        if not self.original_filename.strip() or self.original_filename in {".", ".."} or "/" in self.original_filename or "\\" in self.original_filename:
             raise ValueError("original_filename must be a basename")
+        if self.downloaded_at.tzinfo is None or self.downloaded_at.utcoffset() is None:
+            raise ValueError("downloaded_at must include a timezone")
         if self.size_bytes < 0:
             raise ValueError("size_bytes cannot be negative")
-        if len(self.sha256) != 64 or any(c not in "0123456789abcdefABCDEF" for c in self.sha256):
+        if not _is_sha256(self.sha256):
             raise ValueError("sha256 must be a 64-character hexadecimal digest")
+        object.__setattr__(self, "available_fields", frozenset(self.available_fields))
+        object.__setattr__(self, "validation_messages", tuple(self.validation_messages))
 
 
 @dataclass(frozen=True)
@@ -59,11 +72,22 @@ class SessionAvailability:
     status: AvailabilityStatus
     available_fields: FrozenSet[str] = field(default_factory=frozenset)
     source_filename: Optional[str] = None
+    source_report_sha256: Optional[str] = None
     validation_message: Optional[str] = None
 
     def __post_init__(self) -> None:
         if not 1 <= self.session_number <= 22:
             raise ValueError("session_number must be between 1 and 22")
+        if not self.report_type.strip():
+            raise ValueError("report_type cannot be empty")
+        if self.source_filename and ("/" in self.source_filename or "\\" in self.source_filename):
+            raise ValueError("source_filename must be a basename")
+        if self.status is AvailabilityStatus.AVAILABLE:
+            if not self.source_filename or not _is_sha256(self.source_report_sha256):
+                raise ValueError("available reports require an original filename and source SHA-256")
+        elif self.source_report_sha256 is not None and not _is_sha256(self.source_report_sha256):
+            raise ValueError("source_report_sha256 must be a 64-character hexadecimal digest")
+        object.__setattr__(self, "available_fields", frozenset(self.available_fields))
 
     @property
     def period(self) -> str:
@@ -81,6 +105,8 @@ class ContractObservation:
     expiry: date
     strike: float
     option_type: OptionType
+    source_report_sha256: str
+    source_record_id: str
     oi: Optional[int]
     change_in_oi: Optional[int]
     volume: Optional[int]
@@ -88,10 +114,22 @@ class ContractObservation:
     iv: Optional[float] = None
 
     def __post_init__(self) -> None:
-        if self.strike <= 0:
-            raise ValueError("strike must be positive")
+        if not self.underlying.strip():
+            raise ValueError("underlying cannot be empty")
+        if not math.isfinite(self.strike) or self.strike <= 0:
+            raise ValueError("strike must be a finite positive number")
+        if not isinstance(self.option_type, OptionType):
+            raise ValueError("option_type must be an OptionType value")
+        if not _is_sha256(self.source_report_sha256):
+            raise ValueError("source_report_sha256 must be a 64-character hexadecimal digest")
+        if not self.source_record_id.strip():
+            raise ValueError("source_record_id cannot be empty")
         for name in ("oi", "volume"):
             value = getattr(self, name)
             if value is not None and value < 0:
                 raise ValueError(f"{name} cannot be negative")
+        for name in ("close", "iv"):
+            value = getattr(self, name)
+            if value is not None and not math.isfinite(value):
+                raise ValueError(f"{name} must be finite when supplied")
         # None means the source did not provide the field. It is never replaced here.
