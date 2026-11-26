@@ -141,6 +141,8 @@ Next action:
 | Model edge-case tests | `a201fea0b08faabf8d21e4b9ef535f5769b4844e`, `842d825a3f6275d378ce98f0409d5c41b0efdbfd` | Added provider, exchange, timestamp, type, filename, numeric and canonical-identity regression tests. |
 | Architecture and data identity review record | `820e338ffbb1555ba63162b31bc27af3a51d1068`, `11e9aa53c225e0b8cdcaa41d06b439a4d9b2e24d` | Recorded the completed data-model review and corrected review-section formatting. |
 
-**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS.\n\n**Next action:** Verify the GitHub Actions pytest run, then proceed to the final Phase 1 acceptance review. Do not close Phase 1 until native CI evidence and all acceptance checks are recorded.
+**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS.
+
+**Next action:** Verify the GitHub Actions pytest run, then proceed to the final Phase 1 acceptance review. Do not close Phase 1 until native CI evidence and all acceptance checks are recorded.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
