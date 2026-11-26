@@ -68,7 +68,10 @@ class ReportManifest:
             raise ValueError("report_type cannot be empty")
         if not isinstance(self.source_url, str) or not self.source_url.strip():
             raise ValueError("source_url or authorised source identifier cannot be empty")
-        if not isinstance(self.original_filename, str) or not self.original_filename.strip() or self.original_filename in {".", ".."} or "/" in self.original_filename or "\\" in self.original_filename:
+        if not isinstance(self.original_filename, str):
+            raise ValueError("original_filename must be a basename")
+        filename = self.original_filename.strip()
+        if not filename or filename in {".", ".."} or "/" in filename or "\\" in filename:
             raise ValueError("original_filename must be a basename")
         if not _is_date(self.report_date):
             raise ValueError("report_date must be a date, not a datetime")
@@ -110,14 +113,20 @@ class SessionAvailability:
             raise ValueError("report_type cannot be empty")
         if not isinstance(self.status, AvailabilityStatus):
             raise ValueError("status must be an AvailabilityStatus value")
-        if self.source_filename is not None and (not isinstance(self.source_filename, str) or not self.source_filename.strip() or "/" in self.source_filename or "\\" in self.source_filename):
-            raise ValueError("source_filename must be a basename")
+        filename = None
+        if self.source_filename is not None:
+            if not isinstance(self.source_filename, str):
+                raise ValueError("source_filename must be a basename")
+            filename = self.source_filename.strip()
+            if not filename or filename in {".", ".."} or "/" in filename or "\\" in filename:
+                raise ValueError("source_filename must be a basename")
         if self.status is AvailabilityStatus.AVAILABLE:
-            if not self.source_filename or not _is_sha256(self.source_report_sha256):
+            if not filename or not _is_sha256(self.source_report_sha256):
                 raise ValueError("available reports require an original filename and source SHA-256")
         elif self.source_report_sha256 is not None and not _is_sha256(self.source_report_sha256):
             raise ValueError("source_report_sha256 must be a 64-character hexadecimal digest")
         object.__setattr__(self, "report_type", self.report_type.strip())
+        object.__setattr__(self, "source_filename", filename)
         if self.source_report_sha256 is not None:
             object.__setattr__(self, "source_report_sha256", self.source_report_sha256.lower())
         object.__setattr__(self, "available_fields", frozenset(self.available_fields))
