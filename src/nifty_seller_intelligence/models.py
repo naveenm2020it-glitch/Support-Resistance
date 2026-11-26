@@ -25,6 +25,30 @@ def _is_number(value: object) -> bool:
         return False
 
 
+def _string_frozenset(value: object, field_name: str) -> FrozenSet[str]:
+    if isinstance(value, str):
+        raise ValueError(f"{field_name} must be an iterable of non-empty strings")
+    try:
+        items = tuple(value)
+    except TypeError as exc:
+        raise ValueError(f"{field_name} must be an iterable of non-empty strings") from exc
+    if any(not isinstance(item, str) or not item.strip() for item in items):
+        raise ValueError(f"{field_name} must contain only non-empty strings")
+    return frozenset(item.strip() for item in items)
+
+
+def _string_tuple(value: object, field_name: str) -> tuple[str, ...]:
+    if isinstance(value, str):
+        raise ValueError(f"{field_name} must be an iterable of strings")
+    try:
+        items = tuple(value)
+    except TypeError as exc:
+        raise ValueError(f"{field_name} must be an iterable of strings") from exc
+    if any(not isinstance(item, str) for item in items):
+        raise ValueError(f"{field_name} must contain only strings")
+    return tuple(item.strip() for item in items)
+
+
 class AvailabilityStatus(str, Enum):
     AVAILABLE = "available"
     PARTIAL = "partial"
@@ -83,14 +107,16 @@ class ReportManifest:
             raise ValueError("sha256 must be a 64-character hexadecimal digest")
         if not isinstance(self.validation_status, AvailabilityStatus):
             raise ValueError("validation_status must be an AvailabilityStatus value")
+        available_fields = _string_frozenset(self.available_fields, "available_fields")
+        validation_messages = _string_tuple(self.validation_messages, "validation_messages")
         object.__setattr__(self, "provider", self.provider.strip())
         object.__setattr__(self, "source_exchange", self.source_exchange.strip().upper())
         object.__setattr__(self, "report_type", self.report_type.strip())
         object.__setattr__(self, "source_url", self.source_url.strip())
         object.__setattr__(self, "original_filename", filename)
         object.__setattr__(self, "sha256", self.sha256.lower())
-        object.__setattr__(self, "available_fields", frozenset(self.available_fields))
-        object.__setattr__(self, "validation_messages", tuple(self.validation_messages))
+        object.__setattr__(self, "available_fields", available_fields)
+        object.__setattr__(self, "validation_messages", validation_messages)
 
 
 @dataclass(frozen=True)
@@ -125,11 +151,16 @@ class SessionAvailability:
                 raise ValueError("available reports require an original filename and source SHA-256")
         elif self.source_report_sha256 is not None and not _is_sha256(self.source_report_sha256):
             raise ValueError("source_report_sha256 must be a 64-character hexadecimal digest")
+        if self.validation_message is not None and not isinstance(self.validation_message, str):
+            raise ValueError("validation_message must be a string when supplied")
+        available_fields = _string_frozenset(self.available_fields, "available_fields")
         object.__setattr__(self, "report_type", self.report_type.strip())
         object.__setattr__(self, "source_filename", filename)
+        if self.validation_message is not None:
+            object.__setattr__(self, "validation_message", self.validation_message.strip())
         if self.source_report_sha256 is not None:
             object.__setattr__(self, "source_report_sha256", self.source_report_sha256.lower())
-        object.__setattr__(self, "available_fields", frozenset(self.available_fields))
+        object.__setattr__(self, "available_fields", available_fields)
 
     @property
     def period(self) -> str:
