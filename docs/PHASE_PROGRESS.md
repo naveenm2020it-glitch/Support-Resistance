@@ -18,13 +18,14 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 
 ## Current project status
 
-**Overall status:** PLANNING / FOUNDATION BASELINE  
-**Implementation authorisation:** Not granted by the planning documents alone.  
-**Application implementation:** No new application implementation is authorised by this roadmap update.
+**As of:** 2026-11-26  
+**Overall status:** FOUNDATION HARDENING / PHASE 1 IN PROGRESS  
+**Implementation authorisation:** Phase 1 work has been explicitly started by user instruction. This does not authorise Phases 2–12.  
+**Application implementation:** Only Phase 1 foundation models, validation boundaries, tests and architecture documentation have been changed. No NSE data acquisition, downstream analytics or deployment has been started.
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
-| 1 | Foundation and architecture | IN PROGRESS | Initial typed models, availability logic, multiple-strike foundation and tests are present. Architecture review and test execution evidence remain outstanding. |
+| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, architecture/data dictionary documentation, expanded tests and a pytest CI workflow are present. Local mirrored test execution passed (16 tests); native GitHub Actions result is not yet verified. Architecture and data-contract acceptance review remains outstanding. |
 | 2 | NSE data access and source verification | NOT STARTED | Authorised access and historical availability for order/trade and other report families must be verified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
@@ -36,6 +37,15 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 | 10 | Seller panic-exit risk engine | NOT STARTED | Depends on seller-intelligence features and historical evaluation data. |
 | 11 | Machine learning | NOT STARTED | Requires a substantially longer validated historical dataset and a defined prediction target. |
 | 12 | Dashboard, testing, monitoring and deployment | NOT STARTED | Depends on stable analytics and verified deployment access. |
+
+## Phase 1 execution evidence — 2026-11-26
+
+- Test command: `python -m pytest -q`.
+- Result: **16 passed**.
+- Test environment: local test mirror assembled from the exact Phase 1 source and test contents retrieved from this branch. A native `git clone` was unavailable in the execution environment because GitHub DNS resolution failed.
+- Additional check: `python -m compileall -q src tests` passed on the same local mirror.
+- CI: `.github/workflows/phase1-tests.yml` was added to run pytest on pushes to the working branch and pull requests targeting `main`. A GitHub Actions result has not yet been confirmed.
+- Scope limitation: `validate_22_sessions` validates the 22-record sequence for one report family only. It is not the final per-session/per-report coverage and required-field gate.
 
 ## Repository code and work-progress rules
 
@@ -111,11 +121,21 @@ Next action:
 
 | Change | Commit | Notes |
 |---|---|---|
-| Initial foundation | `8e8aff20808b6d507b64746dd55ded12509a3173` | Initial models, availability gate, multiple-strike foundation and tests; execution status not yet verified here. |
+| Initial foundation | `8e8aff20808b6d507b64746dd55ded12509a3173` | Initial models, availability gate, multiple-strike foundation and tests. |
 | Requirements aligned with order-flow seller analysis | `280b70f5bcf7cb24b532fc0f46dbda17fde7717a` | Added authorised order/trade data, order-flow evidence hierarchy and revised 12-phase scope. |
 | 12-phase implementation roadmap | `c6bc652d37b3b6d6304be273edb3f995954804b1` | Added phase goals, work items, deliverables, dependencies and acceptance criteria. |
 | Phase progress register | `193074a40cd68789c0c3b92b85327a66845a1c3d` | Added statuses, repository code locations, commit/test evidence process and progress template. |
 | Development and data workflow | `a6c1ecac3dc2c3f1fa697e3981ecbd77f7906447` | Defined phase-wise code, tests, progress, data and safety workflow. |
-| README documentation links | `79f0aea138cd7a54d7b3fec49527ff68a0b8ddb4` | Added roadmap/progress links and code/data integrity conventions. | |
+| README documentation links | `79f0aea138cd7a54d7b3fec49527ff68a0b8ddb4` | Added roadmap/progress links and code/data integrity conventions. |
+| Phase 1 provenance model hardening | `e6b7f04223b29a786c9891e1d4bdf10a74b48e0d` | Added timezone, basename, SHA-256, contract identity and source-record lineage checks. |
+| Phase 1 session-gate scope | `85177508684e29b4a7d44957f8390c2d776ce5fb` | Clarified that the 22-record check covers one report family, not final report-matrix completeness. |
+| Multi-strike key normalisation | `d4bd33677fd52bd5996fae5035d5def397fbebbf` | Trimmed and case-normalised underlying symbols for grouping keys. |
+| Phase 1 test expansion | `d52f13b4616ea87d29600599e6216bf3a97f1020`, `2e4ab88a09c1b134fd0f57d4448458ef972f8a34`, `208d905523a4f56d6fee5ac54617eaa9c6953dd6` | Added source provenance fixtures, grouping normalisation tests and model invariant tests. |
+| Architecture baseline | `0ad3ce70388e7b584ac13d17310ef6fe978f4121` | Documented logical components, trust boundaries, data flow and acceptance scope. |
+| Data dictionary baseline | `076f4cce1db32dc0d63cc7234b4eddf4ce870f7e` | Documented implemented and planned records, identities and field semantics. |
+| Phase 1 pytest CI | `b47e3c0b26ccee9246a8029e71ca4398b2773db8` | Added GitHub Actions workflow for pytest on the working branch and PRs to main. |
+| README Phase 1 documentation links | `f9d74d00395d7e09b879c3ee926396e338575557` | Linked architecture and data dictionary documents. |
+
+**Next action:** Review and accept the Phase 1 architecture/data contracts, then verify the first GitHub Actions pytest run before closing Phase 1.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
