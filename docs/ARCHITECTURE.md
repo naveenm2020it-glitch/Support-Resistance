@@ -63,7 +63,7 @@ The field-level `assert_required_fields` helper reports absent fields. A later p
 
 - Python package: `src/nifty_seller_intelligence/`.
 - Automated tests: `tests/`.
-- Non-secret configuration and future report catalogues: `config/` (planned; no configuration module is implemented in Phase 1).
+- Non-secret configuration conventions: `config/README.md`. Runtime configuration parsing and source/report catalogues are not implemented in Phase 1.
 - Technical documentation and phase evidence: `docs/`.
 - CI: `.github/workflows/`.
 - Secrets belong in approved secret storage, not source files, manifests, commits or logs.
@@ -71,9 +71,9 @@ The field-level `assert_required_fields` helper reports absent fields. A later p
 
 ## 8. Test and acceptance strategy
 
-The foundation suite checks model invariants, provenance references, missing-versus-zero semantics, 22-session sequence checks and multi-strike grouping. CI runs the same pytest suite on pushes to the working feature branch and pull requests targeting `main`.
+The foundation suite checks model invariants, provider/exchange separation, provenance references, path/collection safety, numeric and date types, missing-versus-zero semantics, 22-session sequence checks and multi-strike grouping. Unit tests are deterministic/offline; synthetic values are test fixtures only and are not represented as market history. CI runs `python -m pytest -q` on pushes to the working feature branch and pull requests targeting `main`.
 
-Passing unit tests is necessary but not sufficient for Phase 1 acceptance. Phase 1 also requires architecture/data-contract review and explicit evidence that the tests ran. It does not verify NSE data entitlement, historical report availability, data acquisition, archive retention, order-book reconstruction, trading performance or deployment.
+Passing unit tests is necessary but not sufficient for Phase 1 acceptance. Phase 1 also requires architecture/data-contract review and native CI evidence. It does not verify NSE data entitlement, historical report availability, data acquisition, archive retention, order-book reconstruction, trading performance or deployment.
 
 ## 9. Phase 1 architecture boundary review — 2026-11-26
 
@@ -95,4 +95,21 @@ Passing unit tests is necessary but not sufficient for Phase 1 acceptance. Phase
 
 The model layer does not claim to prove provider entitlement, verify downloaded bytes against a digest, supply a native exchange row identifier or define source-specific mandatory fields. Those are external evidence/parsing responsibilities for later phases.
 
-**Remaining Phase 1 gates:** native GitHub Actions execution evidence and final Phase 1 acceptance. These are not implied by architecture or data-model review.
+**Remaining Phase 1 gate after this review:** final acceptance against the implementation roadmap. Native GitHub Actions run #23 has since passed on Python 3.11.18 with package installation successful and 48 tests passed.
+
+## 11. Development and operational conventions — Phase 1 review
+
+**Review result: PASS for the documented conventions.** Full standards are maintained in [Configuration Standards](../config/README.md).
+
+- **Configuration:** future non-secret settings use TOML with an explicit `config_schema_version`. Runtime config must be typed and validated at startup; unknown keys and invalid required settings fail closed. No live report catalogue or source-specific endpoint is introduced before Phase 2 source verification.
+- **Secrets:** credentials and tokens are sourced from approved secret management or protected environment variables. Secret values, authorization headers, signed URLs and environment dumps must never enter Git, manifests or logs.
+- **Logging:** future modules use Python's standard logging package with structured context such as run ID, component, report type, session date, outcome and error code. Logs remain separate from immutable source manifests and durable provenance records.
+- **Error handling:** configuration, permission, source-unavailable, pending-EOD, integrity, schema and unexpected failures remain distinguishable. Integrity, permission and mandatory-data failures fail closed. Only explicitly transient collector errors may receive bounded retries in the future collector phase; invalid data is never retried as a substitute for validation.
+- **Versioning:** the package version is maintained in `pyproject.toml` (currently `0.1.0`) using semantic versioning. Future analysis manifests capture package, configuration-schema/config-hash, source-catalogue, parser and methodology versions as applicable.
+- **Testing:** ordinary unit tests are offline and deterministic. Synthetic values are test fixtures only. Source integration tests require authorised samples and belong to the phase that verifies source access. The CI test command is `python -m pytest -q`.
+
+These are conventions, not implemented services. Phase 1 does not create a runtime configuration loader, logger configuration, data collector, secrets integration, retry engine or production operations service. Those remain phase-gated.
+
+## 12. Native CI evidence — 2026-11-26
+
+GitHub Actions run [#23](https://github.com/naveenm2020it-glitch/Support-Resistance/actions/runs/45779029917) completed successfully for the Phase 1 pull-request merge ref. The runner used Python 3.11.18; editable package installation succeeded; `python -m pytest -q` reported **48 passed in 0.05s**. The workflow actions are pinned to full commit SHAs, and the test job is read-only with a 10-minute limit.
