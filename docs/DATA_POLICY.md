@@ -2,41 +2,45 @@
 
 ## Approved zero-subscription direction
 
-The project has selected an EOD, file-based workflow using official NSE reports where the intended use is permitted. See [Free-source operating mode](FREE_SOURCE_MODE.md) and [Phase 2 source catalogue](PHASE2_SOURCE_CATALOGUE.md).
+The project has selected an EOD, file-based workflow using official NSE/NIFTY Indices reports only where the intended acquisition, storage and use are permitted. See [Free-source operating mode](FREE_SOURCE_MODE.md) and [Phase 2 source catalogue](PHASE2_SOURCE_CATALOGUE.md).
 
-This decision does **not** authorise automated downloads from NSE's website or establish a right to use NSE research data for a trading/speculative product. NSE's current website terms prohibit systematic or automated data collection. NSE's no-cost research-data route is restricted to eligible academic/research institutions and non-commercial purposes; it excludes commercial and speculative uses. Obtain written confirmation from NSE where the intended use is unclear.
+This is **not a live or automatically polled feed**. The zero-subscription technical target is a local importer for user-supplied EOD report files. NSE website Terms of Use prohibit systematic or automated data collection and restrict copying/storage and redistribution. The NSE research-data programme is strictly academic and non-commercial; it is not assumed to cover this trading/seller-intelligence project.
+
+A public report listing or download control does not by itself prove the right to bulk-store the files, create a persistent training dataset, train ML models for trading signals, or display/redistribute derived outputs. Obtain written confirmation from NSE covering the intended source, acquisition method, retention, ML/trading purpose and dashboard use before creating or retaining a persistent NSE data archive. Do not treat an academic research-data approval as granted.
 
 ## Allowed acquisition routes
 
-1. User-initiated manual download through an official NSE/NIFTY Indices report UI, only where the report is offered for download and the user's intended storage/use complies with the applicable terms.
-2. A separately documented and authorised NSE/data-provider product or research-data approval with its approved delivery mechanism and usage licence.
-3. User-supplied source files with sufficient provenance and proof of permitted use.
+1. User-initiated manual download through an official NSE/NIFTY Indices report interface, only where the report is offered for download and the applicable terms permit the intended download.
+2. A separately documented and authorised NSE/data-provider product or written permission with its approved delivery mechanism and usage licence.
+3. User-supplied source files for which the user can establish sufficient provenance and a permitted basis for the intended use.
 
 Do not implement or operate scheduled NSE website polling, scraping, Python requests against public report pages, reverse-engineered endpoints, browser automation, cookie/session workarounds or automated extraction. No live/streaming feed is claimed in the free-source mode.
 
 ## Zero-subscription capability boundary
 
-The free-source mode is EOD only. It may support contract-level OHLC/settlement, traded-contract activity, turnover, OI/change-in-OI where present, contract metadata, NIFTY index OHLC and broad participant aggregates where those fields are present in a verified source file.
+The candidate free EOD source tier may contain contract-level OHLC/settlement, traded-contract activity, turnover, OI/change-in-OI, contract metadata, NIFTY index OHLC and broad participant aggregates. Every field remains conditional on actual report content and verified schema.
 
-It does not provide evidence for historical order additions/modifications/cancellations, order-book depth/replenishment, aggressor-side execution classification, individual seller identity, or intraday seller panic exit. Historical IV, bid/ask, depth and full historical option-chain snapshots must remain unavailable unless a permitted source file actually contains them.
+It does not provide evidence for historical order additions/modifications/cancellations, order-book sequence, bid/ask depth/replenishment, aggressor-side execution classification or individual seller identity. Intraday seller panic-exit detection is unavailable without valid intraday event data. Historical IV, bid/ask, depth and full historical option-chain snapshots must remain unavailable unless a permitted source file actually contains them.
 
 ## Source eligibility and usage restrictions
 
-- NSE's current disclaimer (updated 2026-11-06) states that no-cost research-oriented data under the aggregate 2 GB threshold is restricted to individuals from accredited academic institutions, recognised research organisations and think tanks, and excludes commercial, speculative or investigative purposes. NSE may require an NDA and periodic research progress/data-use reports.
-- NSE's Data List Under the NSE Data Sharing Policy lists equity-derivatives contract-wise price-volume reports and daily/monthly report archives in the research data basket. It separately lists historical EOD and anonymised tick-by-tick data in the **voluminous >2 GB chargeable** basket.
-- NSE's website Terms of Use prohibit systematic or automated data collection, including scraping, data mining, extraction and harvesting. Downloadable public reports must not be treated as permission to automate collection or to redistribute/reuse data outside the applicable terms.
-- A personal trading, speculative or commercial model must not claim eligibility for the no-cost academic research route. Ask NSE for written confirmation of the specific permitted data source and use.
+- NSE's Data List Under the NSE Data Sharing Policy for Research and Analysis identifies F&O contract-wise price-volume reports, contract specifications and archives of daily/monthly F&O reports in its first, freely available research-data basket for non-commercial academic research.
+- The same policy separately identifies voluminous historical EOD data and historical tick-by-tick data above 2 GB as chargeable. Those datasets must not be described as free.
+- NSE's Research Initiatives page states that data provided for research purposes is strictly limited to academic and non-commercial use and describes a formal Data Seeking Request process. This route is not assumed to cover the user's trading/seller-signal use.
+- NSE's website Terms of Use, clauses 8–9, restrict copying/storage and redistribution without prior written permission (subject to the wording for content specifically available for download) and prohibit systematic or automated data collection, including scraping, data mining, extraction and harvesting.
+- A downloadable public report is not a blanket permission for automated collection, bulk retention, trading-related ML training, redistribution or commercial use. Obtain written confirmation for the intended usage before persisting source files or using them to train trading/signal models.
 
 ## Original file preservation
 
-Raw files are write-once inputs:
+After the data-use gate is passed, raw files are write-once inputs:
 - Keep the original filename and bytes.
 - Do not extract into the raw archive directory.
 - Do not rename, edit, recompress, or delete an original report.
 - Store processing outputs separately.
 - A working copy may be created for extraction; raw original remains untouched.
+- Do not put raw NSE reports in normal Git commits or Git history.
 
-Suggested layout:
+Suggested layout (only after storage permission and archive controls are in place):
 ```
 data/
   raw/
@@ -53,7 +57,7 @@ data/
 
 ## Provenance manifest
 
-Each file record must include provider, report type, source URL/source reference, original filename, report/session date, download timestamp with timezone, byte size, SHA-256 checksum, archive/container type, fields found after schema inspection, validation status/messages, permission/entitlement basis where applicable (never credentials), and import timestamp.
+For an authorised source file, each file record must include provider, report type, source URL/source reference, original filename, report/session date, download timestamp with timezone, byte size, SHA-256 checksum, archive/container type, fields found after schema inspection, validation status/messages, permission/entitlement basis (never credentials), and import timestamp.
 
 A file is not valid merely because it exists. Verify expected report date, archive integrity, expected structure, non-empty content and schema.
 
@@ -68,7 +72,7 @@ UDiFF Common Bhavcopy is a report for traded contracts and EOD contract statisti
 
 ## ML data governance
 
-- Only train from source files whose acquisition and intended use have been verified as permitted.
+- Only train from source files whose acquisition, storage and intended ML/trading use have been confirmed as permitted.
 - Preserve source hashes and row-level lineage.
 - Use chronological train/validation/test splits and features available at the prediction timestamp.
 - Define a target before training; prevent look-ahead and leakage.
