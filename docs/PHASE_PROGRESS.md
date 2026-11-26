@@ -25,7 +25,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
-| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, architecture/data dictionary documentation, expanded tests and a pytest CI workflow are present. Local mirrored test execution passed (16 tests); native GitHub Actions result is not yet verified. Architecture and data-contract acceptance review remains outstanding. |
+| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Local mirrored test execution: 38 passed; native GitHub Actions result and final Phase 1 acceptance remain outstanding. |
 | 2 | NSE data access and source verification | NOT STARTED | Authorised access and historical availability for order/trade and other report families must be verified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
@@ -41,7 +41,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 ## Phase 1 execution evidence — 2026-11-26
 
 - Test command: `python -m pytest -q`.
-- Result: **16 passed**.
+- Result after data-model review: **38 passed**.
 - Test environment: local test mirror assembled from the exact Phase 1 source and test contents retrieved from this branch. A native `git clone` was unavailable in the execution environment because GitHub DNS resolution failed.
 - Additional check: `python -m compileall -q src tests` passed on the same local mirror.
 - CI: `.github/workflows/phase1-tests.yml` was added to run pytest on pushes to the working branch and pull requests targeting `main`. A GitHub Actions result has not yet been confirmed.
@@ -135,7 +135,12 @@ Next action:
 | Data dictionary baseline | `076f4cce1db32dc0d63cc7234b4eddf4ce870f7e` | Documented implemented and planned records, identities and field semantics. |
 | Phase 1 pytest CI | `b47e3c0b26ccee9246a8029e71ca4398b2773db8` | Added GitHub Actions workflow for pytest on the working branch and PRs to main. |
 | README Phase 1 documentation links | `f9d74d00395d7e09b879c3ee926396e338575557` | Linked architecture and data dictionary documents. |
+| Architecture boundary review | `7fdb7fce904a1d3d5eb834e039a942a1e51a37f8` | Recorded Phase 1 component ownership, trust boundaries and deferred capabilities. |
+| Data model identity review | `aabd38b79266f84d64bcf95c7f781112173065d8`, `7216aa161f56d11c5f652deb0a23e2cd9d1eb9cc` | Separated delivery provider from NSE exchange and tightened source identity/type/path validation. |
+| Data dictionary identity update | `5afccce27bcff1ee2ef3138a39e2305008892f62` | Documented provider/exchange separation, canonical contract identity and runtime rules. |
+| Model edge-case tests | `a201fea0b08faabf8d21e4b9ef535f5769b4844e`, `842d825a3f6275d378ce98f0409d5c41b0efdbfd` | Added provider, exchange, timestamp, type, filename, numeric and canonical-identity regression tests. |
+| Architecture and data identity review record | `820e338ffbb1555ba63162b31bc27af3a51d1068`, `11e9aa53c225e0b8cdcaa41d06b439a4d9b2e24d` | Recorded the completed data-model review and corrected review-section formatting. |
 
-**Next action:** Review and accept the Phase 1 architecture/data contracts, then verify the first GitHub Actions pytest run before closing Phase 1.
+**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS.\n\n**Next action:** Verify the GitHub Actions pytest run, then proceed to the final Phase 1 acceptance review. Do not close Phase 1 until native CI evidence and all acceptance checks are recorded.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
