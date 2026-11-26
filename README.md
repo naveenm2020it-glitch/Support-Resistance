@@ -5,6 +5,8 @@ A provenance-first NIFTY options research application. It analyses multiple CE/P
 ## Project documentation
 
 - [Approved requirements](docs/REQUIREMENTS.md)
+- [Architecture baseline](docs/ARCHITECTURE.md)
+- [Data dictionary](docs/DATA_DICTIONARY.md)
 - [12-phase implementation roadmap](docs/IMPLEMENTATION_ROADMAP.md)
 - [Current phase progress register](docs/PHASE_PROGRESS.md)
 - [Development and data workflow](docs/WORKFLOW.md)
