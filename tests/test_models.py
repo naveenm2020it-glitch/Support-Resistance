@@ -148,3 +148,50 @@ def test_session_availability_trims_source_filename():
 def test_session_availability_rejects_path_like_source_filename():
     with pytest.raises(ValueError, match="basename"):
         SessionAvailability(22, date(2026, 11, 25), "udiff_bhavcopy", AvailabilityStatus.AVAILABLE, source_filename=" .. ", source_report_sha256=VALID_SHA256)
+
+
+def test_report_manifest_rejects_string_available_fields():
+    with pytest.raises(ValueError, match="available_fields"):
+        make_manifest(available_fields="strike")
+
+
+def test_report_manifest_rejects_non_string_available_field():
+    with pytest.raises(ValueError, match="available_fields"):
+        make_manifest(available_fields={"strike", 22})
+
+
+def test_report_manifest_rejects_string_validation_messages():
+    with pytest.raises(ValueError, match="validation_messages"):
+        make_manifest(validation_messages="not a message tuple")
+
+
+def test_report_manifest_rejects_invalid_validation_status():
+    with pytest.raises(ValueError, match="AvailabilityStatus"):
+        make_manifest(validation_status="available")
+
+
+def test_report_manifest_normalizes_field_and_message_strings():
+    manifest = make_manifest(available_fields={" strike "}, validation_messages=(" warning ",))
+    assert manifest.available_fields == frozenset({"strike"})
+    assert manifest.validation_messages == ("warning",)
+
+
+def test_session_availability_requires_source_file_and_hash_when_available():
+    with pytest.raises(ValueError, match="original filename and source SHA-256"):
+        SessionAvailability(22, date(2026, 11, 25), "udiff_bhavcopy", AvailabilityStatus.AVAILABLE)
+
+
+def test_session_availability_rejects_string_available_fields():
+    with pytest.raises(ValueError, match="available_fields"):
+        SessionAvailability(22, date(2026, 11, 25), "udiff_bhavcopy", AvailabilityStatus.PENDING_EOD, available_fields="oi")
+
+
+def test_session_availability_rejects_non_string_validation_message():
+    with pytest.raises(ValueError, match="validation_message"):
+        SessionAvailability(22, date(2026, 11, 25), "udiff_bhavcopy", AvailabilityStatus.PENDING_EOD, validation_message=22)
+
+
+@pytest.mark.parametrize("field", ["oi", "volume"])
+def test_contract_observation_rejects_negative_counts(field):
+    with pytest.raises(ValueError, match="cannot be negative"):
+        make_observation(**{field: -1})
