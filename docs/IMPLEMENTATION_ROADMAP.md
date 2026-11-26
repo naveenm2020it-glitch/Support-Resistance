@@ -1,6 +1,6 @@
 # NIFTY Seller Intelligence — Implementation Roadmap
 
-**Status:** Phase 1 COMPLETED on the feature branch; Phases 2–12 remain NOT STARTED and require separate authorisation. PR #1 remains draft/unmerged; `main` is unchanged. See `docs/PHASE_PROGRESS.md` for acceptance evidence.  
+**Status:** Phase 1 COMPLETED; Phase 2 IN PROGRESS on the feature branch; Phases 3–12 remain NOT STARTED and require separate authorisation. PR #1 remains draft/unmerged; `main` is unchanged. See `docs/PHASE_PROGRESS.md` and `docs/PHASE2_SOURCE_CATALOGUE.md` for current evidence.  
 **Repository:** `naveenm2020it-glitch/Support-Resistance`  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`  
 **Requirements:** `docs/REQUIREMENTS.md`  
@@ -46,6 +46,8 @@
 - No production functionality is claimed before it is implemented and tested.
 
 ## Phase 2 — NSE data access and source verification
+
+**Status:** IN PROGRESS — first-pass official source discovery is documented in `docs/PHASE2_SOURCE_CATALOGUE.md`. NSE EOD report families have been identified, and NDAL EOD/historical Order & Trade products and their delivery channels have been reviewed. Project entitlement, current UDiFF schema/sample verification, historical option-chain coverage and event-reconstruction feasibility remain open. No source collector is implemented and no authorised sample has yet been tested.
 
 **Goal:** Verify the exact authorised data sources and historical coverage needed by the application.
 
