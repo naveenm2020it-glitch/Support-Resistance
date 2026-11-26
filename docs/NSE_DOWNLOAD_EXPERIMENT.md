@@ -38,5 +38,7 @@ The workflow has no schedule. It supports manual `workflow_dispatch`; for this f
 
 - Implementation commit: `cf8efb82226fb825a799faec4d98e4cd75b3f675` on `feature/nifty-seller-intelligence-foundation`.
 - GitHub Actions regression run [#114](https://github.com/naveenm2020it-glitch/Support-Resistance/actions/runs/45806264745) passed with 54 tests.
-- The acquisition workflow itself has **not** run in Support-Resistance. Therefore no successful download, report count, checksum manifest or artifact is claimed for this repository.
-- The workflow file currently exists on the feature branch only. GitHub's manual workflow dispatch becomes available from the Actions UI after the workflow is present on the repository's default branch. The existing draft PR has not been merged; `main` remains unchanged.
+- Acquisition run [#45806253763](https://github.com/naveenm2020it-glitch/Support-Resistance/actions/runs/45806253763) succeeded on `ubuntu-latest`: 66/66 source files across 22 sessions, all HTTP 200 from the first archive hostname. The artifact contains 66 original report files and one manifest.
+- The artifact ZIP SHA-256 matched the GitHub artifact digest, and all 66 report sizes and SHA-256 hashes matched the manifest after downloading the artifact. Artifact ID: `15108979392`; expiry: 2026-11-27 10:59:34 UTC.
+- Latest regression CI [#115](https://github.com/naveenm2020it-glitch/Support-Resistance/actions/runs/45806484154) passed with 54 tests.
+- The workflow remains on the feature branch. The existing PR #1 is still draft and unmerged; `main` remains unchanged. Its one-time push marker is consumed; subsequent normal pushes skip the download job. Manual dispatch through the Actions UI requires the workflow to be present on the default branch.
