@@ -1,6 +1,6 @@
 # NIFTY Seller Intelligence — Implementation Roadmap
 
-**Status:** Phase 1 COMPLETED; Phase 2 IN PROGRESS on the feature branch; Phases 3–12 remain NOT STARTED and require separate authorisation. PR #1 remains draft/unmerged; `main` is unchanged. See `docs/PHASE_PROGRESS.md` and `docs/PHASE2_SOURCE_CATALOGUE.md` for current evidence.  
+**Status:** Phase 1 COMPLETED; Phase 2 IN PROGRESS on the feature branch; Phases 3–12 remain NOT STARTED and require separate authorisation. PR #1 remains draft/unmerged; `main` is unchanged. See `docs/PHASE_PROGRESS.md`, `docs/PHASE2_SOURCE_CATALOGUE.md` and `docs/FREE_SOURCE_MODE.md` for current evidence.  
 **Repository:** `naveenm2020it-glitch/Support-Resistance`  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`  
 **Requirements:** `docs/REQUIREMENTS.md`  
@@ -47,7 +47,7 @@
 
 ## Phase 2 — NSE data access and source verification
 
-**Status:** IN PROGRESS — first-pass official source discovery is documented in `docs/PHASE2_SOURCE_CATALOGUE.md`. NSE EOD report families have been identified, and NDAL EOD/historical Order & Trade products and their delivery channels have been reviewed. Project entitlement, current UDiFF schema/sample verification, historical option-chain coverage and event-reconstruction feasibility remain open. No source collector is implemented and no authorised sample has yet been tested.
+**Status:** IN PROGRESS — the user selected a no-subscription/free-source direction. Official NSE EOD report families and the limits of this source tier are documented in `docs/PHASE2_SOURCE_CATALOGUE.md` and `docs/FREE_SOURCE_MODE.md`. The intended data path is user-initiated manual download followed by local file import, not an automated NSE website feed. NSE free research-data eligibility and intended-use permission remain unverified; UDiFF/export samples and actual schemas also remain untested. Paid NDAL subscription is not being pursued under the current user direction.
 
 **Goal:** Verify the exact authorised data sources and historical coverage needed by the application.
 
@@ -90,9 +90,9 @@
 - All 22 dates are explicit, reproducible and non-overlapping.
 - Missing calendar information blocks a definitive session selection rather than triggering a guess.
 
-## Phase 4 — Automatic historical report collector
+## Phase 4 — Historical report ingestion and authorised acquisition
 
-**Goal:** Automatically collect every applicable required report for all 22 sessions using authorised access.
+**Goal:** In the selected no-subscription mode, ingest original EOD report files manually downloaded by the user through official permitted interfaces. Any automated remote acquisition is out of scope unless a separate authorised source/entitlement and permission are established.
 
 **Work items**
 - Implement report-source adapters based on Phase 2 findings.
@@ -103,13 +103,14 @@
 - Validate date, file format, size, checksum and expected schema.
 - Record unavailable, partial, invalid and pending reports.
 
-**Deliverables:** Collection engine, report manifest, retry/error logs and per-session collection results.
+**Deliverables:** File-import/validation workflow for permitted EOD inputs, report manifest and per-session import results. An authorised remote collector is a separate optional capability and is not part of the current free-source mode.
 
 **Acceptance criteria**
 - Every required report/date combination has a recorded outcome.
 - Successful downloads are integrity-checked.
 - Failed or unavailable sources are visible and never silently replaced.
 - No report is claimed as automatically collected until an authorised end-to-end download test succeeds.
+- In free-source mode, the import starts only from a user-supplied downloaded file; there is no scheduled polling, scraping or automated collection from NSE public pages.
 
 **Dependency:** Phase 2 authorised access verification.
 
@@ -181,7 +182,9 @@
 - Missing data is never converted into zero or fabricated.
 - Required reports and fields pass validation before a dataset is marked complete.
 
-## Phase 8 — Multiple-strike CE/PE and order-flow analysis
+## Phase 8 — Multiple-strike CE/PE EOD analysis (order-flow only if separately authorised)
+
+**Free-source scope:** With EOD files alone, implement only contract-aligned EOD price, settlement, volume/contract count, turnover and OI/change-in-OI analysis where present. Order-flow, order-book reconstruction and aggressor-side classification remain unavailable unless a separately authorised, sufficiently complete tick/order/trade dataset is approved.
 
 **Goal:** Analyse multiple strikes for both option sides across the 22 sessions.
 
@@ -203,7 +206,9 @@
 - Aggressor classification is only used when supported by the available data.
 - OI remains an aggregate positioning measure, not proof of seller identity.
 
-## Phase 9 — Seller intelligence engine
+## Phase 9 — EOD seller-positioning proxies and support/resistance zones
+
+**Free-source scope:** Interpret only qualified EOD positioning proxies. Do not claim actual seller identity, confirmed writing/covering, passive absorption or intent from OI/price/volume.
 
 **Goal:** Produce evidence-based seller supply and positioning assessments.
 
@@ -225,7 +230,9 @@
 - Levels are explained and are not presented as guaranteed barriers.
 - Scores/thresholds are tested and calibrated before being presented as confidence.
 
-## Phase 10 — Seller panic-exit risk engine
+## Phase 10 — Potential seller-stress assessment (EOD-only limitations)
+
+**Free-source scope:** Intraday seller panic-exit/order-book detection is unavailable without authorised intraday event data. Any later EOD risk flag must be labelled a historical positioning/price-risk proxy, not a detected intraday exit.
 
 **Goal:** Detect potential seller stress and exit pressure.
 
@@ -245,7 +252,9 @@
 - Ambiguous evidence reduces confidence or produces an indeterminate result.
 - Risk outputs are qualified as potential conditions, not certain predictions.
 
-## Phase 11 — Machine learning
+## Phase 11 — Machine learning on permitted EOD history
+
+**Free-source scope:** Train only after a sufficiently long, use-authorised EOD history has been imported and validated. The 22-session analysis window is not by itself a training corpus. No model may use data whose acquisition/use rights are unresolved.
 
 **Goal:** Build predictive models only when longer validated data supports them.
 
