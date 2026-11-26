@@ -39,7 +39,7 @@ The initial architecture is modular and phase-gated. Source acquisition, raw-fil
 
 ## 4. Current foundation contract boundaries
 
-- `ReportManifest` records provider, report family, source reference, original filename, report date, timezone-aware download time, file size, SHA-256, observed fields and validation outcome.
+- `ReportManifest` records the delivery provider separately from `source_exchange` (fixed to NSE for this project), plus report family, source reference, original filename, report date, timezone-aware download time, file size, SHA-256, observed fields and validation outcome.
 - `SessionAvailability` records one report family's availability for one numbered session. An `AVAILABLE` record must refer to an original filename and a valid source-report SHA-256.
 - `ContractObservation` records the contract dimensions and EOD values available in the source. It requires both the source-report SHA-256 and a source-record identifier.
 - `validate_22_sessions` validates a 22-record sequence for **one report family**. It is not the complete session-by-report availability matrix and does not by itself authorise a complete seller analysis. Later report-coverage and required-field gates must pass as well.
@@ -49,9 +49,9 @@ The field-level `assert_required_fields` helper reports absent fields. A later p
 
 ## 5. Identity and provenance rules
 
-- A source artifact is referenced by its SHA-256 content digest. Its metadata also retains provider, report type and report date.
+- A source artifact is identified by its source context `(provider, source_exchange, report_type, report_date)` plus its SHA-256 content digest. The digest identifies bytes; the context identifies why/where those bytes were obtained. Provider entitlement itself must be verified in Phase 2.
 - A session/report availability item is identified by its session number and report type within the selected 22-session run.
-- A contract observation is identified using session date, underlying, expiry, strike, option type, source-report SHA-256 and source-record ID.
+- A contract observation is identified using session date, canonical uppercase underlying, expiry, strike, option type, source-report SHA-256 and source-record ID.
 - If a source format has no native row ID, the parser must use a deterministic locator such as a one-based source row number, scoped to the source-report hash.
 - Derived records must carry references to their input observations/reports and a versioned calculation or methodology identifier. These derived-record models are not implemented in Phase 1.
 
@@ -89,4 +89,4 @@ Passing unit tests is necessary but not sufficient for Phase 1 acceptance. Phase
 
 **Architecture decision:** keep the current Phase 1 package deliberately small and side-effect free. Implement source-specific acquisition, format-dependent schemas, report matrix validation, derived metrics and analytics only in their approved later phases, after their dependencies are verified.
 
-**Items not accepted by this architecture review:** data-model identity review, full runtime type validation, native GitHub Actions execution evidence and final Phase 1 acceptance. These remain separate checklist items.
+## 10. Phase 1 data-model identity review — 2026-11-26\n\n**Review result: PASS for the foundation record scope.** The data dictionary and implementation now distinguish delivery provider from the represented exchange, scope session/report records to an analysis run, and identify each contract observation by contract dimensions plus source artifact and source-row lineage. Runtime checks enforce the documented date, numeric, enum, checksum and canonical-symbol constraints.\n\nThe model layer does not claim to prove provider entitlement, verify downloaded bytes against a digest, supply a native exchange row identifier or define source-specific mandatory fields. Those are external evidence/parsing responsibilities for later phases.\n\n**Remaining Phase 1 gates:** native GitHub Actions execution evidence and final Phase 1 acceptance. These are not implied by architecture or data-model review.
