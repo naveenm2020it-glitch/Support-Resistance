@@ -25,7 +25,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
-| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Local mirrored test execution: 38 passed; native GitHub Actions result and final Phase 1 acceptance remain outstanding. |
+| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Model validation review: PASS. Local mirrored test execution: 48 passed; native GitHub Actions result and final Phase 1 acceptance remain outstanding. |
 | 2 | NSE data access and source verification | NOT STARTED | Authorised access and historical availability for order/trade and other report families must be verified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
@@ -41,7 +41,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 ## Phase 1 execution evidence — 2026-11-26
 
 - Test command: `python -m pytest -q`.
-- Result after data-model review: **38 passed**.
+- Result after model-validation review: **48 passed**.
 - Test environment: local test mirror assembled from the exact Phase 1 source and test contents retrieved from this branch. A native `git clone` was unavailable in the execution environment because GitHub DNS resolution failed.
 - Additional check: `python -m compileall -q src tests` passed on the same local mirror.
 - CI: `.github/workflows/phase1-tests.yml` was added to run pytest on pushes to the working branch and pull requests targeting `main`. A GitHub Actions result has not yet been confirmed.
@@ -140,8 +140,11 @@ Next action:
 | Data dictionary identity update | `5afccce27bcff1ee2ef3138a39e2305008892f62` | Documented provider/exchange separation, canonical contract identity and runtime rules. |
 | Model edge-case tests | `a201fea0b08faabf8d21e4b9ef535f5769b4844e`, `842d825a3f6275d378ce98f0409d5c41b0efdbfd` | Added provider, exchange, timestamp, type, filename, numeric and canonical-identity regression tests. |
 | Architecture and data identity review record | `820e338ffbb1555ba63162b31bc27af3a51d1068`, `11e9aa53c225e0b8cdcaa41d06b439a4d9b2e24d` | Recorded the completed data-model review and corrected review-section formatting. |
+| Model collection/status validation | `3739ff94c8851eeaa218353fdc0963b70b3bfc02` | Validated field/message collections and report/session validation states at runtime. |
+| Model validation regression tests | `a021c6795ea0d75e7f2bc3974f522a1f10324b94` | Added edge-case tests for collection types, required source references, invalid statuses and negative counts. |
+| Model validation data dictionary | `e07ed0196b981b95b63a397eac0c811680119c2b` | Documented runtime field collection and numeric constraints. |
 
-**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS.
+**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS.
 
 **Next action:** Verify the GitHub Actions pytest run, then proceed to the final Phase 1 acceptance review. Do not close Phase 1 until native CI evidence and all acceptance checks are recorded.
 
