@@ -1,6 +1,6 @@
 # NIFTY Seller Intelligence — Architecture Baseline
 
-**Status:** Phase 1 architecture baseline; implementation is deliberately limited to the foundation modules described below.
+**Status:** Phase 1 architecture boundary review completed; implementation remains limited to the foundation modules described below.  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`
 
 ## 1. Architecture objectives
@@ -63,7 +63,7 @@ The field-level `assert_required_fields` helper reports absent fields. A later p
 
 - Python package: `src/nifty_seller_intelligence/`.
 - Automated tests: `tests/`.
-- Non-secret configuration and future report catalogues: `config/`.
+- Non-secret configuration and future report catalogues: `config/` (planned; no configuration module is implemented in Phase 1).
 - Technical documentation and phase evidence: `docs/`.
 - CI: `.github/workflows/`.
 - Secrets belong in approved secret storage, not source files, manifests, commits or logs.
@@ -74,3 +74,19 @@ The field-level `assert_required_fields` helper reports absent fields. A later p
 The foundation suite checks model invariants, provenance references, missing-versus-zero semantics, 22-session sequence checks and multi-strike grouping. CI runs the same pytest suite on pushes to the working feature branch and pull requests targeting `main`.
 
 Passing unit tests is necessary but not sufficient for Phase 1 acceptance. Phase 1 also requires architecture/data-contract review and explicit evidence that the tests ran. It does not verify NSE data entitlement, historical report availability, data acquisition, archive retention, order-book reconstruction, trading performance or deployment.
+
+## 9. Phase 1 architecture boundary review — 2026-11-26
+
+**Review result: PASS for the current foundation scope.** The following boundaries match the implementation and the approved phase plan:
+
+- The current Python modules are pure data/model and in-memory helper code. They do not perform network requests, access credentials, download reports, write raw files, connect to a database or run market analysis.
+- `ReportManifest` represents source-artifact metadata. It does not download a report or independently prove that its bytes match the recorded digest; byte-level hashing/verification belongs to the acquisition/archive implementation phases.
+- `SessionAvailability` represents one report family for one numbered session. The sequence helper handles one report family at a time. The complete report-by-session matrix and report-specific mandatory fields are explicitly deferred to later validation work.
+- `ContractObservation` is an observed source-row contract, not a synthetic option-chain quote. Missing fields remain `None`; source-report and source-record references preserve the intended lineage.
+- Multi-strike grouping is an in-memory grouping function over rows already supplied. It does not imply a historical collector, a trading-session calendar or a seller-intelligence engine exists.
+- The architecture/data dictionary describe planned downstream records without claiming those records or services are already implemented.
+- The CI workflow runs tests only. It has no NSE credentials, external data acquisition, archive, scheduled collector or deployment steps.
+
+**Architecture decision:** keep the current Phase 1 package deliberately small and side-effect free. Implement source-specific acquisition, format-dependent schemas, report matrix validation, derived metrics and analytics only in their approved later phases, after their dependencies are verified.
+
+**Items not accepted by this architecture review:** data-model identity review, full runtime type validation, native GitHub Actions execution evidence and final Phase 1 acceptance. These remain separate checklist items.
