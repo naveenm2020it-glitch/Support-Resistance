@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from hashlib import sha256
 
 from nifty_seller_intelligence.availability import assert_required_fields, validate_22_sessions
 from nifty_seller_intelligence.models import AnalysisStatus, AvailabilityStatus, SessionAvailability
@@ -10,7 +11,8 @@ def make_sessions(selected=date(2026, 11, 25), missing=None):
     rows = []
     for n, session_date in enumerate(dates, 1):
         status = AvailabilityStatus.PENDING_EOD if n == missing else AvailabilityStatus.AVAILABLE
-        rows.append(SessionAvailability(n, session_date, "udiff_bhavcopy", status, frozenset({"strike", "expiry", "option_type", "oi", "volume"})))
+        source_hash = sha256(f"report-{n}".encode()).hexdigest() if status is AvailabilityStatus.AVAILABLE else None
+        rows.append(SessionAvailability(n, session_date, "udiff_bhavcopy", status, frozenset({"strike", "expiry", "option_type", "oi", "volume"}), f"session-{n}.zip" if source_hash else None, source_hash))
     return rows
 
 
@@ -34,6 +36,6 @@ def test_missing_required_field_is_reported_not_filled():
 
 def test_duplicate_dates_fail_gate():
     rows = make_sessions()
-    rows[-1] = SessionAvailability(22, rows[-2].session_date, "udiff_bhavcopy", AvailabilityStatus.AVAILABLE)
+    rows[-1] = SessionAvailability(22, rows[-2].session_date, "udiff_bhavcopy", AvailabilityStatus.AVAILABLE, source_filename="session-22.zip", source_report_sha256=sha256(b"report-22").hexdigest())
     result = validate_22_sessions(rows, rows[-2].session_date)
     assert result.status is AnalysisStatus.BLOCKED
