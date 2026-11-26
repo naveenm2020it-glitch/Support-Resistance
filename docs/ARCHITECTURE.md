@@ -1,6 +1,6 @@
 # NIFTY Seller Intelligence — Architecture Baseline
 
-**Status:** Phase 1 architecture boundary review completed. Phase 2 source/access verification is in progress; no source collector or market-data integration has been implemented.  
+**Status:** Phase 1 architecture boundary review completed. Phase 2 free-source EOD and usage-rights verification is in progress. The current technical direction is user-supplied EOD file import after rights confirmation; no NSE public-page collector or market-data integration has been implemented.  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`
 
 ## 1. Architecture objectives
@@ -16,26 +16,26 @@ The initial architecture is modular and phase-gated. Source acquisition, raw-fil
 | Typed domain models | Define report, session and contract-observation records | 1 | Initial models implemented |
 | Session-sequence validation | Validate numbering, date order and availability for one report family | 1 | Initial helper implemented |
 | Multi-strike grouping | Group actual observations by underlying, expiry, strike and CE/PE | 1 | Initial helper implemented |
-| Source catalogue and access verification | Document report families, entitlement and historical coverage | 2 | First-pass official NSE catalogue documented in `docs/PHASE2_SOURCE_CATALOGUE.md`; project entitlement and sample validation remain open |
+| Source catalogue and usage-rights verification | Document EOD report families, permitted use and historical coverage | 2 | Official report families and no-subscription limits documented; written storage/ML/trading permission and sample validation remain open |
 | Trading-session calendar | Resolve 22 actual completed F&O sessions | 3 | Not implemented |
-| Historical collector | Acquire authorised reports and preserve original bytes | 4 | Not implemented |
+| EOD file importer | Validate user-supplied permitted EOD report files and preserve provenance | 4 | Not implemented; no public-page scraper or remote collector in current scope |
 | Temporary artifact lifecycle | Apply and audit the five-hour temporary retention requirement | 5 | Not implemented |
 | Permanent archive and provenance | Preserve raw reports and verify transfers by checksum | 6 | Not implemented |
 | Parsing and full report validation | Parse source formats, link source rows and enforce report/field coverage | 7 | Not implemented |
-| CE/PE order-flow analysis | Build multi-strike metrics from validated observations and entitled event data | 8 | Not implemented |
+| CE/PE EOD analysis | Build multi-strike metrics from verified EOD observations | 8 | Not implemented; order-flow/order-book analysis excluded from current no-subscription scope |
 | Seller and panic-risk assessment | Produce qualified signals and support/resistance zones | 9–10 | Not implemented |
 | Machine learning | Train and evaluate only on an eligible validated history | 11 | Not implemented |
 | Dashboard and deployment | Present results, monitor and deploy after acceptance | 12 | Not implemented |
 
 ## 3. Data flow and trust boundaries
 
-1. **Authorised source boundary:** NSE reports or another explicitly authorised provider are acquired only after access terms and delivery method are verified. Public-site scraping and access-control workarounds are outside the design.
-2. **Immutable raw artifact boundary:** downloaded bytes and original filename are preserved unchanged. The SHA-256 digest and source metadata identify the artifact. Raw market data is not committed to ordinary Git history.
+1. **Source and usage-rights boundary:** Official NSE EOD report families are identified, but persistent storage and ML/trading use require written confirmation under the applicable terms. The current no-subscription mode uses user-supplied files only; public-page scraping, scheduled polling and access-control workarounds are outside the design.
+2. **Immutable raw artifact boundary:** once data rights are confirmed and a permitted file is imported, preserve original bytes and filename unchanged. The SHA-256 digest and source metadata identify the artifact. Raw market data is not committed to ordinary Git history. Do not enable persistent raw storage before the permission gate passes.
 3. **Working-copy boundary:** extraction and transformation operate on disposable working copies, never on the archived original.
 4. **Normalisation boundary:** parsers convert source rows into typed records. Each observation retains the source report hash and a stable source-record locator.
 5. **Validation boundary:** report date, format, integrity, schema, required fields, contract dimensions and session coverage are checked. Missing values are not replaced with zero or values from another date.
 6. **Analytics boundary:** derived metrics retain their input/source references, formula or method version, coverage and limitations. OI and volume are aggregate evidence, not proof of an individual seller's identity or intent.
-7. **Presentation boundary:** outputs distinguish measured observations, derived metrics and qualified interpretations. An incomplete dataset cannot be presented as a complete analysis.
+7. **Presentation boundary:** outputs distinguish measured EOD observations, derived metrics and qualified interpretations. EOD OI/price/volume must not be represented as order flow, seller identity or confirmed opening/closing intent. An incomplete or unlicensed dataset cannot be presented as a complete analysis.
 
 ## 4. Current foundation contract boundaries
 
