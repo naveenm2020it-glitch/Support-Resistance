@@ -60,6 +60,15 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 - Compliance: no automated NSE public-page scraping, access-control bypass, or historical data substitution was used.
 - **Current Phase 2 result:** IN PROGRESS. The no-subscription technical direction is selected and the official EOD source inventory is documented. Remaining gates are written confirmation of permitted data storage/ML/trading use, receipt of permitted UDiFF/index/contract-wise EOD samples, exact field/schema validation, and confirmation of available historical date coverage. No automated NSE feed, O&T reconstruction, order-book replay, or historical option-chain replay is in scope. See `docs/FREE_SOURCE_MODE.md` and the source catalogue.
 
+### User-directed NSE downloader reproduction — 2026-11-26
+
+- Inspected the successful Ubuntu acquisition implementation in the user-linked `NIFTY_Seller_Intelligence_project` repository. Its downloader uses Python Requests, direct official report archive URLs, fallback across `archives.nseindia.com`, `nsearchives.nseindia.com` and `www.nseindia.com`, three attempts per host, streamed bytes and SHA-256.
+- Reproduced the technical pattern on this feature branch for UDiFF Bhavcopy ZIP, F&O-MII contract GZIP and NIFTY 50 index CSV files. The manual workflow has no schedule; it uploads a one-day GitHub artifact and does not upload to B2 or commit raw market data.
+- Added structural validation only. The UDiFF format workbook and source-use permission are not established by this test; a successful ZIP/header check is not a full schema approval.
+- Native GitHub Actions regression run [#114](https://github.com/naveenm2020it-glitch/Support-Resistance/actions/runs/45806264745) passed: **54 tests**. This run validates code/tests only.
+- **Download execution is not yet verified in Support-Resistance.** No report bytes have been downloaded by this repository's workflow and no target-project download artifact exists. The new workflow is still only on the feature branch; its manual dispatch is not available from the default-branch Actions menu until the workflow reaches the default branch. The initial branch update was made through the GitHub integration and did not start its push event.
+- This implementation is an explicit user-requested technical experiment, not a change to the approved data-use position. NSE's automated-collection restriction remains unresolved. Do not schedule/repeat the workflow or use downloaded content for persistent storage, analysis or ML until written NSE confirmation is obtained.
+
 ## Phase 1 execution evidence — 2026-11-26
 
 - Test command: `python -m pytest -q`.
