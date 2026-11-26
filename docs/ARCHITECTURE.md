@@ -89,4 +89,10 @@ Passing unit tests is necessary but not sufficient for Phase 1 acceptance. Phase
 
 **Architecture decision:** keep the current Phase 1 package deliberately small and side-effect free. Implement source-specific acquisition, format-dependent schemas, report matrix validation, derived metrics and analytics only in their approved later phases, after their dependencies are verified.
 
-## 10. Phase 1 data-model identity review — 2026-11-26\n\n**Review result: PASS for the foundation record scope.** The data dictionary and implementation now distinguish delivery provider from the represented exchange, scope session/report records to an analysis run, and identify each contract observation by contract dimensions plus source artifact and source-row lineage. Runtime checks enforce the documented date, numeric, enum, checksum and canonical-symbol constraints.\n\nThe model layer does not claim to prove provider entitlement, verify downloaded bytes against a digest, supply a native exchange row identifier or define source-specific mandatory fields. Those are external evidence/parsing responsibilities for later phases.\n\n**Remaining Phase 1 gates:** native GitHub Actions execution evidence and final Phase 1 acceptance. These are not implied by architecture or data-model review.
+## 10. Phase 1 data-model identity review — 2026-11-26
+
+**Review result: PASS for the foundation record scope.** The data dictionary and implementation now distinguish delivery provider from the represented exchange, scope session/report records to an analysis run, and identify each contract observation by contract dimensions plus source artifact and source-row lineage. Runtime checks enforce the documented date, numeric, enum, checksum and canonical-symbol constraints.
+
+The model layer does not claim to prove provider entitlement, verify downloaded bytes against a digest, supply a native exchange row identifier or define source-specific mandatory fields. Those are external evidence/parsing responsibilities for later phases.
+
+**Remaining Phase 1 gates:** native GitHub Actions execution evidence and final Phase 1 acceptance. These are not implied by architecture or data-model review.
