@@ -3,7 +3,8 @@
 **Repository:** `naveenm2020it-glitch/Support-Resistance`  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`  
 **Roadmap:** `docs/IMPLEMENTATION_ROADMAP.md`  
-**Requirements:** `docs/REQUIREMENTS.md`
+**Requirements:** `docs/REQUIREMENTS.md`  
+**Phase 2 source catalogue:** `docs/PHASE2_SOURCE_CATALOGUE.md`
 
 ## Status definitions
 
@@ -177,7 +178,8 @@ Next action:
 | Native GitHub Actions run #23 | `45779029917` | PR merge-ref run passed on Python 3.11.18; package install succeeded and pytest reported 48 passed. |
 | Configuration/operations standards | `5fa310d0f7e95fd329141069016c74e68d03720c` | Added TOML, secret handling, logging, error, versioning and test conventions in `config/README.md`. |
 | README configuration link | `849681fa1ab8c0e15f2beab8cabacf5b1f904d84` | Linked the configuration/operating standards. |
-| Final architecture conventions review | `076aa102eac6ccdc2da28ee26d6ec76d9b9d6e89` | Recorded PASS for configuration, logging, error handling, versioning, testing and native CI evidence.
+| Final architecture conventions review | `076aa102eac6ccdc2da28ee26d6ec76d9b9d6e89` | Recorded PASS for configuration, logging, error handling, versioning, testing and native CI evidence. |
+| Phase 2 source catalogue | `a6b0c875359214a48568517fcb3d4a8bc29b0b4c` | Added official NSE source inventory, access/entitlement findings, candidate coverage matrix, known schema fields, unresolved items and Phase 2 acceptance checklist. |
 
 **Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS; (5) configuration, logging, error handling, versioning and test conventions — PASS; (6) final Phase 1 acceptance review — PASS.
 
@@ -185,4 +187,3 @@ Next action:
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
 
-| Phase 2 source catalogue | `a6b0c875359214a48568517fcb3d4a8bc29b0b4c` | Added official NSE source inventory, access/entitlement findings, candidate coverage matrix, known schema fields, unresolved items and Phase 2 acceptance checklist. |
