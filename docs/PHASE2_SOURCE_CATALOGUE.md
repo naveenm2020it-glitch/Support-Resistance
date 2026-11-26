@@ -109,7 +109,17 @@ A session/report combination may be marked Available only after the actual file 
 | Historical F&O option-chain / IV / quotes / depth | Public option-chain page does not establish a historical dated archive. Other market-data products may exist. | Treat as unresolved and unavailable to the application until NDAL confirms a specific product, fields and history. |
 | Permanent archive / Ubuntu | Not in scope of source-verification evidence; server access and archive have not been tested in Phase 2. | Do not claim archive connectivity or create a data archive in this phase. Phase 6 owns archive implementation. |
 
-The NSE Data & Analytics page lists market-data subscriptions and tariffs effective 2026-04-01. No price is copied into this document because a current, applicable F&O quote/contract and usage profile have not been confirmed. The actual tariff and any add-on charges must be obtained from the current official tariff sheet or NDAL quotation.
+The NSE Data & Analytics domestic tariff sheet effective 2026-04-01 (page updated 2026-04-24) publishes the following F&O rates. These are published list prices, not a project-specific quote; the applicable usage category, site scope, tax and written licence still need confirmation.
+
+| Product | Published domestic F&O fee | Important distinction |
+|---|---:|---|
+| EOD Order & Trade Data | ₹12,50,000 per annum / enterprise single site | EOD O&T product; delivered by SFTP according to the product page. |
+| Historical Order & Trade Data | ₹12,50,000 per annum / single site; ₹31,30,000 / global multiple sites | Includes order and trade history; the relevant standard product for the historical event-flow requirement. |
+| Historical Trade Data only | ₹1,10,000 per annum / single site | Trade-only product; not a substitute for order messages, cancellations/modifications or order-book reconstruction. |
+| Educational institution / student-researcher Historical Order & Trade Data | ₹6,25,000 per annum for F&O | Separate eligibility category; do not assume an individual/private project qualifies. NSE notes restrictions and delay conditions for near-real-time data in the educational category. |
+| Educational institution / student-researcher Historical Trade Data only | ₹22,000 per annum for F&O | Trade-only; does not satisfy order-event reconstruction needs. |
+
+Published prices exclude applicable taxes/levies. The tariff also specifies an additional 50% of the product fixed fee for each additional delivery channel. The standard and educational tariffs are different categories; written NDAL confirmation is required before relying on the educational rate. The separate 1-minute/5-minute snapshot product fees are not evidence that a historical options-chain archive is included.
 
 ## 6. NDAL questions that must be answered before source integration
 
@@ -139,7 +149,7 @@ Official contact published on NSE's EOD/Historical Data page: **marketdata@nse.c
 | Exact source fields, units and schema versions verified | IN PROGRESS | Contract-master and O&T specifications reviewed; UDiFF v4 workbook and actual EOD exports remain to be inspected. |
 | Permitted source samples received and validated | NOT STARTED | No sample files have been obtained or processed. |
 | Order/trade linkage and order-book reconstruction feasibility proven | NOT STARTED | Requires entitled samples and tests for complete event coverage, ordering, timestamps, references and reconstruction. |
-| Project entitlement and commercial terms confirmed | BLOCKED | No evidence yet of an active NDAL F&O subscription, approved agreement, credential or quote for this project. |
+| Project entitlement and commercial terms confirmed | PARTIAL / BLOCKED | Current domestic tariff is documented above, but there is no evidence of an active NDAL F&O subscription, approved agreement, project quote, confirmed usage category, credentials or sample. |
 | Historical chain/quote/depth coverage confirmed | BLOCKED | Need a specific NDAL product/specification and sample or written confirmation of unavailability. |
 
 ### Phase 2 current blockers
@@ -171,7 +181,7 @@ All references below are official NSE / NSE Data & Analytics sources. They estab
 6. [NSE Indices FAQs](https://betanseapi.nseindia.com/static/products-services/indices-faqs) — published NIFTY 50 historical-data start date.
 7. [NSE EOD / Historical Data Subscription](https://betanseapi.nseindia.com/static/market-data/eod-historical-data-subscription) — EOD and historical Order & Trade products, delivery channels, F&O samples/specification and subscription contact.
 8. [NSE Historical Order & Trade Data Specification v1.19 (3 August 2026)](https://nsearchives.nseindia.com//web/mediaattachment/2026-09/NSE_Hist_Order_Trade_Data_1.19_20260902144045.pdf) — current reviewed F&O Trim/Full order and trade layouts and stated product delays.
-9. [NSE Data & Info Vending](https://www.nseindia.com/static/nse-data-and-analytics/data-information-vending) — NSE Data & Analytics product categories and tariff access.
+9. [NSE Data & Info Vending](https://www.nseindia.com/static/nse-data-and-analytics/data-information-vending) — NSE Data & Analytics product categories and current tariff access. [Domestic tariff effective 1 April 2026 (PDF)](https://nsearchives.nseindia.com//web/mediaattachment/2026-04/Download_Pricing_file_-_Domestic_clients_20260424122229.pdf) — standard EOD/Historical F&O Order & Trade, trade-only and educational/researcher rates; all prices subject to stated conditions/taxes.
 10. [NSE Option Chain](https://www.nseindia.com/option-chain) — public current option-chain interface reviewed; it does not itself establish historical-date archive coverage.
 11. [NSE FPI FAQs](https://nsearchives.nseindia.com/web/sites/default/files/inline-files/FPI%20FAQs_Brochure.pdf) — published historical O&T / historical trade date-range guidance and description of market-data levels. Confirm current F&O terms with NDAL rather than treating the FAQ as a subscription contract.
 
