@@ -19,14 +19,14 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 ## Current project status
 
 **As of:** 2026-11-26  
-**Overall status:** PHASE 1 COMPLETED ON THE FEATURE BRANCH; PR/RELEASE APPROVAL IS SEPARATE  
-**Implementation authorisation:** Phase 1 work has been explicitly started by user instruction. This does not authorise Phases 2–12.  
-**Application implementation:** Phase 1 foundation models, validation boundaries, tests and architecture/configuration documentation are complete on the feature branch. No NSE data acquisition, downstream analytics, live integration or deployment has been started. The draft PR remains unmerged; `main` is unchanged.
+**Overall status:** PHASE 1 COMPLETED; PHASE 2 IN PROGRESS ON THE FEATURE BRANCH; PR/RELEASE APPROVAL IS SEPARATE  
+**Implementation authorisation:** Phase 1 is completed. The user explicitly authorised Phase 2 on 2026-11-26. Phases 3–12 are not authorised by that instruction.  
+**Application implementation:** Phase 1 foundation is complete. Phase 2 is limited to official source discovery, schema/field review, access and entitlement verification, and permitted sample validation. No data collector, automated public-site access, historical archive, downstream analytics, live integration or deployment has been implemented. The draft PR remains unmerged; `main` is unchanged.
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
 | 1 | Foundation and architecture | COMPLETED | Architecture/component boundaries, data-model identity/source lineage, runtime model validation, configuration/logging/error/versioning/test conventions and native CI have all passed review. Local mirror: 48 passed. Native GitHub Actions run #23: PASS (Python 3.11.18, 48 passed). All Phase 1 roadmap acceptance criteria are met on the feature branch. Draft PR #1 remains unmerged; `main` is unchanged pending separate release approval. |
-| 2 | NSE data access and source verification | NOT STARTED | Authorised access and historical availability for order/trade and other report families must be verified. |
+| 2 | NSE data access and source verification | IN PROGRESS | First-pass official NSE source catalogue documented in `docs/PHASE2_SOURCE_CATALOGUE.md`. Project NDAL entitlement, permitted samples, UDiFF export schema, historical option-chain availability and order/trade reconstruction remain unverified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
 | 5 | Temporary GitHub storage and five-hour cleanup | NOT STARTED | Artifact lifecycle and deletion timing must be proven; do not assume native retention is five hours. |
@@ -37,6 +37,19 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 | 10 | Seller panic-exit risk engine | NOT STARTED | Depends on seller-intelligence features and historical evaluation data. |
 | 11 | Machine learning | NOT STARTED | Requires a substantially longer validated historical dataset and a defined prediction target. |
 | 12 | Dashboard, testing, monitoring and deployment | NOT STARTED | Depends on stable analytics and verified deployment access. |
+
+## Phase 2 execution evidence — 2026-11-26
+
+- User explicitly authorised Phase 2 on 2026-11-26.
+- Created `docs/PHASE2_SOURCE_CATALOGUE.md` with first-pass official NSE source discovery, source-family matrix, candidate per-session report coverage, known fields, access channels, subscription/entitlement status, unresolved items, NDAL questions and Phase 2 acceptance checklist.
+- Official sources reviewed: NSE All Reports — Derivatives; NSE UDiFF forms/formats page; NSE circular NSE/MSD/60315; NSE Master Data Specification v1.6; NSE historical index data page and NIFTY 50 FAQ; NSE EOD/Historical Data Subscription page; NSE Historical Order & Trade specification v1.19; NSE Data & Info Vending page; NSE Option Chain page; NSE FPI FAQ.
+- First-pass findings: UDiFF Common Bhavcopy Final replaces legacy F&O Bhavcopy CSV/Common Bhavcopy from 2024-07-08; daily F&O-MII contract files are listed; NIFTY 50 history is publicly exposed via date-range CSV; historical contract-wise price/volume and participant OI/volume reports are listed.
+- Order/trade: NDAL describes EOD Order & Trade delivery via SFTP and historical O&T via its online platform. Specification v1.19 describes F&O Trim and Full variants; documented delays for Full orders and trades differ (90 and 30 calendar days). NSE FPI FAQ states historical F&O O&T from Jan 2008 and separate historical trade data from Jan 1994; actual subscribed-product coverage must be confirmed with NDAL.
+- Historical option-chain: reviewed public option-chain UI has no historical analysis-date selector. This does not rule out a separately licensed NDAL historical snapshot product; written confirmation is required.
+- Entitlement/sample status: no project NDAL subscription, agreement, credentials, quote, permitted sample files or 22-date report set was evidenced or tested. No NDAL enquiry was sent. No report bytes were downloaded or stored in Git.
+- UDiFF schema: NSE publishes UDiFF catalogue v4.0 and a trade/Bhavcopy format workbook; the linked XLSX could not be inspected in this research pass. Exact UDiFF field mapping remains open; no schema was inferred from the retired format.
+- Compliance: no automated NSE public-page scraping, access-control bypass, or historical data substitution was used.
+- **Current Phase 2 result:** IN PROGRESS. Source discovery is partially satisfied; subscription/entitlement, current schema verification, sample validation and O&T reconstruction acceptance remain open. See the source catalogue for the detailed checklist.
 
 ## Phase 1 execution evidence — 2026-11-26
 
@@ -168,6 +181,8 @@ Next action:
 
 **Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS; (5) configuration, logging, error handling, versioning and test conventions — PASS; (6) final Phase 1 acceptance review — PASS.
 
-**Next action:** Phase 2 may be planned only after separate authorisation. Keep PR #1 draft/unmerged and `main` unchanged until a separate merge/release instruction.
+**Next action:** Continue Phase 2 only: obtain the official UDiFF format workbook and permitted EOD samples; confirm whether an NDAL F&O subscription already exists or obtain official product/price/terms information; request permitted Trim order/trade samples and historical-chain coverage details. Keep PR #1 draft/unmerged and `main` unchanged until a separate merge/release instruction.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
+
+| Phase 2 source catalogue | `a6b0c875359214a48568517fcb3d4a8bc29b0b4c` | Added official NSE source inventory, access/entitlement findings, candidate coverage matrix, known schema fields, unresolved items and Phase 2 acceptance checklist. |
