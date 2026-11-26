@@ -25,7 +25,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
-| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Model validation review: PASS. Local mirrored test execution: 48 passed; native GitHub Actions result and final Phase 1 acceptance remain outstanding. |
+| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Model validation review: PASS. Local mirrored install/test execution: 48 passed; native GitHub Actions result and final Phase 1 acceptance remain outstanding. Draft PR #1 is open for CI/review only; no check-run evidence is currently returned, and it has not been merged. |
 | 2 | NSE data access and source verification | NOT STARTED | Authorised access and historical availability for order/trade and other report families must be verified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
@@ -43,8 +43,10 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 - Test command: `python -m pytest -q`.
 - Result after model-validation review: **48 passed**.
 - Test environment: local test mirror assembled from the exact Phase 1 source and test contents retrieved from this branch. A native `git clone` was unavailable in the execution environment because GitHub DNS resolution failed.
+- Package installation: `python -m pip install -e ".[dev]" --no-build-isolation` passed on Python 3.13.5. The GitHub Actions workflow targets Python 3.11, so this local run is not a substitute for that native runner.
 - Additional check: `python -m compileall -q src tests` passed on the same local mirror.
-- CI: `.github/workflows/phase1-tests.yml` was added to run pytest on pushes to the working branch and pull requests targeting `main`. A GitHub Actions result has not yet been confirmed.
+- CI: `.github/workflows/phase1-tests.yml` was added to run pytest on pushes to the working branch and pull requests targeting `main`. Draft PR #1 is open, but the available GitHub workflow/status lookup returned no run or status records; native GitHub Actions execution remains unverified.
+- PR: [#1 — Phase 1: foundation architecture and data contracts](https://github.com/naveenm2020it-glitch/Support-Resistance/pull/1) is draft, unmerged and does not change `main`.
 - Scope limitation: `validate_22_sessions` validates the 22-record sequence for one report family only. It is not the final per-session/per-report coverage and required-field gate.
 
 ## Repository code and work-progress rules
@@ -146,6 +148,6 @@ Next action:
 
 **Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS.
 
-**Next action:** Verify the GitHub Actions pytest run, then proceed to the final Phase 1 acceptance review. Do not close Phase 1 until native CI evidence and all acceptance checks are recorded.
+**Next action:** Obtain a native GitHub Actions result for PR #1 or the feature-branch push, then perform the final Phase 1 acceptance review. Do not merge PR #1 or close Phase 1 without the required evidence and separate approval.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
