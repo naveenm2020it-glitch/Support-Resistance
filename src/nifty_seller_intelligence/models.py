@@ -17,7 +17,12 @@ def _is_date(value: object) -> bool:
 
 
 def _is_number(value: object) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 class AvailabilityStatus(str, Enum):
@@ -79,7 +84,7 @@ class ReportManifest:
         object.__setattr__(self, "source_exchange", self.source_exchange.strip().upper())
         object.__setattr__(self, "report_type", self.report_type.strip())
         object.__setattr__(self, "source_url", self.source_url.strip())
-        object.__setattr__(self, "original_filename", self.original_filename.strip())
+        object.__setattr__(self, "original_filename", filename)
         object.__setattr__(self, "sha256", self.sha256.lower())
         object.__setattr__(self, "available_fields", frozenset(self.available_fields))
         object.__setattr__(self, "validation_messages", tuple(self.validation_messages))
