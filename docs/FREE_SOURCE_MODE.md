@@ -2,7 +2,7 @@
 
 **Decision date:** 2026-11-26  
 **User decision:** No NSE Data & Analytics subscription; use free official source reports where permitted.  
-**Status:** Selected as the zero-subscription design direction. A manual local-import workflow is the technical target, but dataset retention and ML use remain gated by NSE's written permission/terms for this trading-oriented project.  
+**Status:** Selected as the zero-subscription design direction. A manual local-import workflow remains the approved target. A manually requested experimental GitHub Actions downloader has been added solely to reproduce a technical method from another user-owned repository; it is not an approved operational source route and remains subject to the unresolved NSE automated-collection and data-use restrictions. Dataset retention and ML use remain gated by written permission.  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`
 
 ## 1. Executive decision

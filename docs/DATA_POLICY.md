@@ -14,7 +14,7 @@ A public report listing or download control does not by itself prove the right t
 2. A separately documented and authorised NSE/data-provider product or written permission with its approved delivery mechanism and usage licence.
 3. User-supplied source files for which the user can establish sufficient provenance and a permitted basis for the intended use.
 
-Do not implement or operate scheduled NSE website polling, scraping, Python requests against public report pages, reverse-engineered endpoints, browser automation, cookie/session workarounds or automated extraction. No live/streaming feed is claimed in the free-source mode.
+Do not implement or operate scheduled NSE website polling, scraping, reverse-engineered endpoints, browser automation, cookie/session workarounds or automated extraction as normal project functionality. A one-off manually requested technical reproduction using Requests against public archive URLs has been added on the feature branch; NSE's Terms may also prohibit this automated retrieval. It is not an approved acquisition route and must not be scheduled, repeatedly run, used for analysis/ML, or treated as permission. See [NSE EOD downloader experiment](NSE_DOWNLOAD_EXPERIMENT.md). Written NSE confirmation remains required before any operational use or retention.
 
 ## Zero-subscription capability boundary
 

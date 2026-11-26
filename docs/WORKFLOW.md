@@ -30,7 +30,7 @@ Follow the 12 phases in `docs/IMPLEMENTATION_ROADMAP.md`:
 11. Machine learning.
 12. Dashboard, testing, monitoring and deployment.
 
-Do not skip a blocked data-access, usage-rights, archive or validation dependency by inventing or substituting data. NSE website terms prohibit automated collection; no-subscription mode uses user-supplied EOD files only, after permitted use is confirmed.
+Do not skip a blocked data-access, usage-rights, archive or validation dependency by inventing or substituting data. The approved no-subscription mode uses user-supplied EOD files only, after permitted use is confirmed. A separate one-off experimental downloader was added at the user's explicit request; it is not an approved source route and is documented in docs/NSE_DOWNLOAD_EXPERIMENT.md. Do not schedule or repeatedly run it; NSE terms may prohibit this automated retrieval.
 
 ## 3. GitHub code and progress storage
 
