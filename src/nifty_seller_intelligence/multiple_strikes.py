@@ -21,6 +21,6 @@ def group_observations_by_strike(observations: Iterable[ContractObservation]) ->
     """Group actual rows by contract identity, retaining missing fields as None."""
     groups: dict[StrikeKey, list[ContractObservation]] = defaultdict(list)
     for item in observations:
-        key = StrikeKey(item.underlying.upper(), item.expiry, item.strike, item.option_type)
+        key = StrikeKey(item.underlying.strip().upper(), item.expiry, item.strike, item.option_type)
         groups[key].append(item)
     return {key: tuple(sorted(rows, key=lambda row: row.session_date)) for key, rows in groups.items()}
