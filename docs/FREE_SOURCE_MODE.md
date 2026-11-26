@@ -117,6 +117,5 @@ Do not proceed to ML until the dataset has enough valid sessions/contracts, cons
 3. [NIFTY Indices — Historical Data](https://www.niftyindices.com/reports/historical-data)
 4. [NSE Securities/Contracts Available for Trading](https://www.nseindia.com/market-data/securities-information-contracts-available-for-trading)
 5. [NSE Data List Under the NSE Data Sharing Policy for Research and Analysis (28 July 2025)](https://nsearchives.nseindia.com/web/sites/default/files/inline-files/Data%20list%20under%20NSE%20Data%20Sharing%20Policy%20for%20Research%20and%20Analysis_20250728.pdf)
-6. [NSE Disclaimer](https://www.nseindia.com/static/nse-disclaimer)
-7. [NSE Research Initiatives](https://www.nseindia.com/static/research/research-initiatives)
-8. [NSE Terms of Use](https://www.nseindia.com/static/nse-terms-of-use)
+6. [NSE Research Initiatives](https://www.nseindia.com/static/research/research-initiatives)
+7. [NSE Terms of Use](https://www.nseindia.com/static/nse-terms-of-use)
