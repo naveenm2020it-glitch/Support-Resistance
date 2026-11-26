@@ -1,4 +1,4 @@
-"""Strict 22-session completeness gate; this module does not discover/download sessions."""
+"""Validate the 22-session sequence; this is not the final report-coverage gate."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -17,7 +17,7 @@ class AvailabilityResult:
 
 
 def validate_22_sessions(sessions: Iterable[SessionAvailability], selected_date: date) -> AvailabilityResult:
-    """Validate ordered 17+4+1 sessions for a selected completed EOD date."""
+    """Validate the numbered 17+4+1 session sequence for one report family."""
     rows = tuple(sorted(sessions, key=lambda item: item.session_number))
     if len(rows) != 22:
         return AvailabilityResult(AnalysisStatus.BLOCKED, rows, rows,
@@ -36,9 +36,9 @@ def validate_22_sessions(sessions: Iterable[SessionAvailability], selected_date:
     if bad:
         state = AnalysisStatus.PARTIAL if len(bad) < 22 else AnalysisStatus.BLOCKED
         return AvailabilityResult(state, rows, bad,
-                                 f"Analysis not complete: {len(bad)} of 22 sessions are not fully available")
+                                 f"Session sequence is incomplete: {len(bad)} of 22 report records are not available")
     return AvailabilityResult(AnalysisStatus.COMPLETE, rows, (),
-                              "All 22 core session reports are marked available; verify required field coverage before ML.")
+                              "All 22 records for this report family are available; required report-family coverage and field validation remain separate gates.")
 
 
 def assert_required_fields(actual_fields: set[str] | frozenset[str], required_fields: set[str] | frozenset[str]) -> tuple[str, ...]:
