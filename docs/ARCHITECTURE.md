@@ -1,6 +1,6 @@
 # NIFTY Seller Intelligence — Architecture Baseline
 
-**Status:** Phase 1 architecture boundary review completed; implementation remains limited to the foundation modules described below.  
+**Status:** Phase 1 architecture boundary review completed. Phase 2 source/access verification is in progress; no source collector or market-data integration has been implemented.  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`
 
 ## 1. Architecture objectives
@@ -16,7 +16,7 @@ The initial architecture is modular and phase-gated. Source acquisition, raw-fil
 | Typed domain models | Define report, session and contract-observation records | 1 | Initial models implemented |
 | Session-sequence validation | Validate numbering, date order and availability for one report family | 1 | Initial helper implemented |
 | Multi-strike grouping | Group actual observations by underlying, expiry, strike and CE/PE | 1 | Initial helper implemented |
-| Source catalogue and access verification | Document report families, entitlement and historical coverage | 2 | Not implemented |
+| Source catalogue and access verification | Document report families, entitlement and historical coverage | 2 | First-pass official NSE catalogue documented in `docs/PHASE2_SOURCE_CATALOGUE.md`; project entitlement and sample validation remain open |
 | Trading-session calendar | Resolve 22 actual completed F&O sessions | 3 | Not implemented |
 | Historical collector | Acquire authorised reports and preserve original bytes | 4 | Not implemented |
 | Temporary artifact lifecycle | Apply and audit the five-hour temporary retention requirement | 5 | Not implemented |
