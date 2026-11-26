@@ -45,30 +45,32 @@
 - Existing foundation code is reviewed and baseline tests are executed.
 - No production functionality is claimed before it is implemented and tested.
 
-## Phase 2 — NSE data access and source verification
+## Phase 2 — NSE source and usage-rights verification
 
-**Status:** IN PROGRESS — the user selected a no-subscription/free-source direction. Official NSE EOD report families and the limits of this source tier are documented in `docs/PHASE2_SOURCE_CATALOGUE.md` and `docs/FREE_SOURCE_MODE.md`. The intended data path is user-initiated manual download followed by local file import, not an automated NSE website feed. NSE free research-data eligibility and intended-use permission remain unverified; UDiFF/export samples and actual schemas also remain untested. Paid NDAL subscription is not being pursued under the current user direction.
+**Status:** IN PROGRESS — the user selected a no-subscription direction and has no NDAL subscription. Official NSE EOD report families are inventoried in `docs/PHASE2_SOURCE_CATALOGUE.md`; the intended technical path is manual, user-supplied EOD files followed by local import. This is not a live or automated NSE feed. The NSE research-data programme is strictly academic/non-commercial, the website terms restrict storage/reuse and prohibit automated collection, and the project has not obtained written permission for persistent dataset creation or trading-related ML. UDiFF/export samples and exact field mappings also remain untested. Paid O&T and historical tick data are out of current scope.
 
-**Goal:** Verify the exact authorised data sources and historical coverage needed by the application.
+**Goal:** Identify an affordable official EOD input set and confirm that acquisition, storage, analysis and intended ML/trading use are permitted.
 
 **Work items**
-- Catalogue UDiFF Common Bhavcopy Final, MII Contract File, NIFTY index history, contract-wise price-volume and applicable OI reports.
-- Investigate historical option-chain availability and fields.
-- Investigate authorised F&O order and trade data products, including their historical coverage, delivery format, event fields and entitlement requirements.
-- Confirm whether order events can be reconstructed into a sufficiently complete order book and whether trade records can be linked to the associated order events.
-- Record availability delays for trimmed and full order/trade products.
-- Document access method, terms, credentials required, retention and date coverage.
-- Identify required versus optional reports and fields.
+- Catalogue F&O UDiFF Common Bhavcopy Final, the matching daily F&O-MII contract master, historical contract-wise price-volume, NIFTY 50 historical index CSV and optional participant-wise OI/volume reports.
+- Obtain written clarification from NSE on whether the project may manually download, retain, analyse and train ML models on the selected reports for its seller-intelligence/trading purpose.
+- Distinguish the research-policy data basket from public website downloads and from chargeable >2 GB historical EOD/tick-by-tick products.
+- After use rights are confirmed, obtain a permitted representative sample of each selected EOD family; inspect field names, schema/version, units, scales, null codes and date coverage.
+- Confirm historic report date availability and identify mandatory versus supplementary reports for the 22-session window.
+- Record fields unavailable from EOD reports, including order events, historical IV, quotes and depth when absent.
+- Keep paid Order & Trade, historical tick-by-tick and order-book replay out of the current no-subscription scope; do not implement or imply those capabilities.
 
-**Deliverables:** Source catalogue, access/entitlement decision, report coverage matrix and field dictionary.
+**Deliverables:** EOD source catalogue, written data-use decision, verified sample/schema map, candidate 22-session report-coverage matrix and explicit unavailable-field register.
 
 **Acceptance criteria**
-- Every planned source has documented evidence of availability and an authorised access method.
-- Order/trade reconstruction feasibility is proven with permitted sample data before it is treated as an available feature.
-- Unavailable data fields are explicitly documented.
-- Unauthorised scraping or access-control circumvention is not used.
+- Every selected EOD report family has an official source and documented permitted acquisition route.
+- Written permission/terms cover local or server-side retention, ML training, derived seller-intelligence signals and dashboard use for the intended project.
+- Each selected report has at least one permitted real sample whose date, format, fields, units and null semantics have been inspected.
+- Required versus optional report families are defined from verified samples, not assumed.
+- Unavailable data and unsupported analyses are explicitly identified.
+- No automated collection from NSE public pages or access-control circumvention is used.
 
-**Dependency:** Data-provider/NSE entitlement and sample data may be required.
+**Dependency:** NSE written data-use clarification/permission may be required. If permission is not granted, NSE files must not be retained for model training; an alternative data source with an explicit usable licence must be identified.
 
 ## Phase 3 — 22-session calendar engine
 
@@ -90,29 +92,29 @@
 - All 22 dates are explicit, reproducible and non-overlapping.
 - Missing calendar information blocks a definitive session selection rather than triggering a guess.
 
-## Phase 4 — Historical report ingestion and authorised acquisition
+## Phase 4 — EOD report file ingestion and validation
 
-**Goal:** In the selected no-subscription mode, ingest original EOD report files manually downloaded by the user through official permitted interfaces. Any automated remote acquisition is out of scope unless a separate authorised source/entitlement and permission are established.
+**Goal:** Build a local file-import workflow for original EOD report files that the user has a confirmed right to download, retain and process. No remote NSE collector or scheduled website polling is part of the no-subscription mode.
 
 **Work items**
-- Implement report-source adapters based on Phase 2 findings.
-- Resolve report/date combinations from the report catalogue.
-- Collect applicable EOD, contract master, index, price-volume, OI, option-chain, order and trade products.
-- Download original report bytes and preserve original filenames.
-- Implement timeouts, bounded retries, idempotency and duplicate detection.
-- Validate date, file format, size, checksum and expected schema.
-- Record unavailable, partial, invalid and pending reports.
+- Resolve required report/date combinations from the approved Phase 2 EOD catalogue.
+- Accept user-supplied original files through a local import boundary.
+- Preserve original filename and bytes; calculate SHA-256 and record source reference, report type, report date and import time.
+- Validate archive integrity, expected report date, file type, schema version, required fields, units and row counts using the verified Phase 2 schema.
+- Detect duplicate imports idempotently by source context and content hash.
+- Record missing, partial, invalid and pending reports without silent substitution.
+- Keep raw files outside normal Git commits and ensure that any persistent storage location is covered by the approved data-use rights.
 
-**Deliverables:** File-import/validation workflow for permitted EOD inputs, report manifest and per-session import results. An authorised remote collector is a separate optional capability and is not part of the current free-source mode.
+**Deliverables:** File-import/validation workflow for permitted EOD inputs, provenance manifest and per-session report availability results. An authorised remote collector is not included.
 
 **Acceptance criteria**
-- Every required report/date combination has a recorded outcome.
-- Successful downloads are integrity-checked.
-- Failed or unavailable sources are visible and never silently replaced.
-- No report is claimed as automatically collected until an authorised end-to-end download test succeeds.
-- In free-source mode, the import starts only from a user-supplied downloaded file; there is no scheduled polling, scraping or automated collection from NSE public pages.
+- Each imported file has a provenance record and verified checksum.
+- Invalid, duplicate, partial and wrong-date files are handled explicitly.
+- Missing dates/reports are not backfilled from another session or live data.
+- The import workflow operates on user-supplied files only; no scheduled polling, scraping or automated collection from NSE public pages is present.
+- Persistent storage is not enabled until Phase 2 data-use permission is established.
 
-**Dependency:** Phase 2 authorised access verification.
+**Dependency:** Phase 2 permitted-use decision and verified report schemas; Phase 3 session manifest.
 
 ## Phase 5 — Temporary GitHub storage and five-hour cleanup
 
