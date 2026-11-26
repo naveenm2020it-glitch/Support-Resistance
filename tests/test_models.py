@@ -67,7 +67,11 @@ def test_report_manifest_rejects_non_nse_exchange():
         make_manifest(source_exchange="BSE")
 
 
-@pytest.mark.parametrize("filename", [r"folder\\report.zip", r"folder\report.zip", "../report.zip", "folder/report.zip"])
+def test_report_manifest_trims_filename_before_storage():
+    assert make_manifest(original_filename=" NIFTY.zip ").original_filename == "NIFTY.zip"
+
+
+@pytest.mark.parametrize("filename", [r"folder\\report.zip", r"folder\report.zip", "../report.zip", "folder/report.zip", " .. "])
 def test_report_manifest_rejects_path_components(filename):
     with pytest.raises(ValueError, match="basename"):
         make_manifest(original_filename=filename)
@@ -76,6 +80,11 @@ def test_report_manifest_rejects_path_components(filename):
 def test_report_manifest_rejects_timezone_naive_download_time():
     with pytest.raises(ValueError, match="timezone"):
         make_manifest(downloaded_at=datetime(2026, 11, 26, 9, 30))
+
+
+def test_report_manifest_rejects_datetime_as_report_date():
+    with pytest.raises(ValueError, match="date, not a datetime"):
+        make_manifest(report_date=datetime(2026, 11, 25, 0, 0))
 
 
 @pytest.mark.parametrize("size", [1.5, True, "1024"])
@@ -103,9 +112,15 @@ def test_contract_observation_normalizes_underlying_and_digest():
     assert row.source_report_sha256 == VALID_SHA256
 
 
-def test_contract_observation_rejects_non_finite_strike():
+@pytest.mark.parametrize("strike", [float("nan"), float("inf"), 10 ** 1000])
+def test_contract_observation_rejects_non_finite_or_oversized_strike(strike):
     with pytest.raises(ValueError, match="finite positive"):
-        make_observation(strike=float("nan"))
+        make_observation(strike=strike)
+
+
+def test_contract_observation_rejects_datetime_for_session_date():
+    with pytest.raises(ValueError, match="must be dates"):
+        make_observation(session_date=datetime(2026, 11, 25, 0, 0))
 
 
 @pytest.mark.parametrize("field,value", [("oi", 1.5), ("change_in_oi", True), ("volume", 2.5)])
@@ -123,3 +138,13 @@ def test_contract_observation_rejects_invalid_price_or_iv(field, value):
 def test_session_availability_rejects_boolean_session_number():
     with pytest.raises(ValueError, match="integer between"):
         SessionAvailability(True, date(2026, 11, 25), "udiff_bhavcopy", AvailabilityStatus.PENDING_EOD)
+
+
+def test_session_availability_trims_source_filename():
+    row = SessionAvailability(22, date(2026, 11, 25), "udiff_bhavcopy", AvailabilityStatus.AVAILABLE, source_filename=" report.zip ", source_report_sha256=VALID_SHA256)
+    assert row.source_filename == "report.zip"
+
+
+def test_session_availability_rejects_path_like_source_filename():
+    with pytest.raises(ValueError, match="basename"):
+        SessionAvailability(22, date(2026, 11, 25), "udiff_bhavcopy", AvailabilityStatus.AVAILABLE, source_filename=" .. ", source_report_sha256=VALID_SHA256)
