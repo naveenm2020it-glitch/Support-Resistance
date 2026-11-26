@@ -55,7 +55,7 @@ Do not skip a blocked data-access, usage-rights, archive or validation dependenc
 9. Validate date, archive integrity, checksum, format, schema and required fields.
 10. Parse working copies only; preserve original raw files unchanged.
 11. In the current free EOD mode, do not attempt order/trade event linking or order-book reconstruction. Keep order flow, aggressor classification and passive seller replenishment unavailable unless a separate authorised event-data source is approved later.
-13. Normalise underlying, expiry, strike, option type and session/timestamp while preserving source values and units.
+12. Normalise underlying, expiry, strike, option type and session date while preserving source values and units.
 14. Build multi-strike CE and PE datasets from observed rows.
 15. Check 22-session coverage and required fields before full analysis.
 16. Compare sessions 1–17, sessions 18–21 and session 22.
