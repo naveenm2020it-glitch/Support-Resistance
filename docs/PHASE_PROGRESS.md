@@ -58,7 +58,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 - UDiFF schema: NSE publishes UDiFF catalogue v4.0 and a trade/Bhavcopy format workbook; the linked XLSX could not be inspected in this research pass. Exact UDiFF field mapping remains open; no schema was inferred from the retired format.
 - Regression CI: GitHub Actions run #50 for documentation commit `c33e2656c9137fab8128840c98ab5ad5e605ad49` completed successfully on Python 3.11.18; editable install succeeded and `python -m pytest -q` reported 48 passed in 0.10s. This is a foundation regression check only; it does not validate Phase 2 source files or NDAL data.
 - Compliance: no automated NSE public-page scraping, access-control bypass, or historical data substitution was used.
-- **Current Phase 2 result:** IN PROGRESS. The no-subscription technical direction is selected and the official EOD source inventory is documented. Remaining gates are written confirmation of permitted data storage/ML/trading use, receipt of permitted UDiFF/index/contract-wise EOD samples, exact field/schema validation, and confirmation of available historical date coverage. No automated NSE feed, O&T reconstruction, or historical option-chain replay is in scope. See `docs/FREE_SOURCE_MODE.md` and the source catalogue.
+- **Current Phase 2 result:** IN PROGRESS. The no-subscription technical direction is selected and the official EOD source inventory is documented. Remaining gates are written confirmation of permitted data storage/ML/trading use, receipt of permitted UDiFF/index/contract-wise EOD samples, exact field/schema validation, and confirmation of available historical date coverage. No automated NSE feed, O&T reconstruction, order-book replay, or historical option-chain replay is in scope. See `docs/FREE_SOURCE_MODE.md` and the source catalogue.
 
 ## Phase 1 execution evidence — 2026-11-26
 
@@ -205,6 +205,11 @@ Next action:
 | Phase 2 EOD-only catalogue refinement | `2e5eb6e002739c63f850ee5be5cb3f881f070f0b` | Marked paid NDAL order/trade, historical tick and historical quote/depth products out of current scope; focused acceptance on permitted EOD files. |
 | Manual workflow sequencing correction | `f9bba6ace277fdb91e7ecc2d6272f5ed3c5f252b` | Fixed the local EOD ingestion workflow sequence. |
 | Future paid-source questions clarified | `1616565a8ae27a447d51eeaa1f5ea1e29c458f81` | Kept NDAL enquiry questions only as an optional future reference, not a current dependency. |
+| Phase 2 source catalogue free-route update | `2e5eb6e002739c63f850ee5be5cb3f881f070f0b` | Refocused Phase 2 source decisions on permitted EOD reports and marked paid NDAL/quote-depth products out of scope. |
+| Workflow step order correction | `f9bba6ace277fdb91e7ecc2d6272f5ed3c5f252b` | Corrected numbered steps in the manual EOD workflow. |
+| Paid NDAL questions marked optional | `1616565a8ae27a447d51eeaa1f5ea1e29c458f81` | Retained paid NDAL questions only as future reference, not a current dependency. |
+| Roadmap EOD analytics scope | `431d092380a27f919b56b0bea24c64de3ede6aab` | Replaced order-flow and intraday-risk implementation work with EOD-only parsing, positioning and risk-proxy scope. |
+| Architecture EOD source design | `81145b1033bab949860183340b3522a6180ab75f` | Updated component boundaries and rights/usage gates for the no-subscription EOD design. |
 
 **Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS; (5) configuration, logging, error handling, versioning and test conventions — PASS; (6) final Phase 1 acceptance review — PASS.
 
