@@ -19,11 +19,11 @@ The official NSE material identifies the following source families:
 - F&O participant-wise OI and participant-wise trading-volume reports.
 - Separate EOD and historical F&O order/trade data products offered through NSE Data & Analytics (NDAL).
 
-The F&O order/trade product is the critical dependency for the planned event-flow analysis. NSE's published product page says EOD order/trade data is delivered through SFTP and historical order/trade data through an online platform. The current specification describes Trim and Full variants and their different availability delays. The repository does **not** contain evidence of an active NDAL subscription, approved credentials, a tested delivery channel, or downloaded licensed sample data.
+Paid F&O Order & Trade, historical tick-by-tick and intraday market-data products are documented for completeness only and are **out of the current user-selected scope**. The user has confirmed no NDAL subscription and selected a no-subscription EOD-file direction. These paid products must not be treated as available dependencies or used to justify order-flow claims.
 
-The public NSE option-chain page provides a current contract/expiry selection and CSV download. The reviewed page does not expose a historical analysis-date control. This is not proof that NDAL has no separately licensed historical snapshot product; that question remains open and must be put to NDAL.
+The public NSE option-chain page provides a current contract/expiry selection and CSV download. The reviewed page does not expose a historical analysis-date control. Historical option-chain, IV, quote and depth history are therefore not available to the current EOD-only design unless a separately permitted real source is established.
 
-**Phase 2 is not complete.** No paid subscription, entitlement, sample file, report-by-date coverage, schema parser, or source integration has been tested in this first-pass research. Do not implement an automated public-page downloader. Manual downloads from official report pages may be used only through their permitted user workflow; automated collection must wait for an explicitly authorised access method.
+**Phase 2 is not complete.** Official EOD source families have been identified, but written permission for persistent storage and ML/trading use, permitted real sample files, UDiFF schema inspection and date-coverage validation remain open. Do not implement an automated public-page downloader.
 
 ## 1A. User-selected no-subscription route and NSE research-data policy
 
@@ -40,12 +40,12 @@ The same NSE document separately labels **First Basket (Voluminous data; >2 GB; 
 
 Its footnote describes tick-by-tick historical data as data pertaining to six months before the date of request or earlier. Thus the large historical EOD/tick-by-tick datasets must not be treated as free.
 
-NSE's disclaimer, updated 6 November 2026, states that no-cost research-oriented data up to the aggregate 2 GB threshold is restricted to individuals from accredited academic institutions, recognised research organisations and think tanks, and excludes commercial, speculative or investigative purposes. NSE's research initiative page states that data supplied for research is strictly academic and non-commercial; it provides a Data Seeking Request route at `nseri@nse.co.in`. The project has not established institutional eligibility or received such approval.
+NSE's Data Sharing Policy identifies the listed F&O contract-wise price/volume and daily/monthly report archives in the first, freely available research-data basket for non-commercial academic research. The same policy separately lists voluminous historical EOD and tick-by-tick data above 2 GB as chargeable. NSE's Research Initiatives page states that research data is strictly academic and non-commercial. The project has not established academic eligibility or received written approval for the current trading/seller-intelligence and ML purpose.
 
 The NSE website Terms of Use prohibit systematic or automated data collection, including scraping, data mining, data extraction and data harvesting. Accordingly:
 - Do not build scheduled downloads, scrapers, reverse-engineered API calls, browser automation or cookie/session workarounds for the NSE public report UI.
 - A file-based importer may process files supplied by a user, but that does not by itself establish that the user's intended trading/ML use is licensed.
-- Before using the reports in an operational speculative/trading signal or model, obtain written confirmation from NSE that the selected source, retention, analysis and intended use are permitted.
+- Before retaining the reports in a persistent dataset or using them in a trading/seller-intelligence model, obtain written confirmation from NSE that the selected source, storage, ML training, derived outputs and intended use are permitted.
 - If the project is genuinely eligible academic/non-commercial research, follow the formal NSE research request process and any NDA/reporting requirements.
 
 The practical EOD feature scope and disabled order-flow capabilities are recorded in `docs/FREE_SOURCE_MODE.md`.
@@ -56,7 +56,7 @@ Status vocabulary used here:
 
 - **IDENTIFIED:** an official NSE page or specification describes/lists the source.
 - **PUBLIC UI:** an official report/download UI was found; this does not by itself grant automated-access permission.
-- **SUBSCRIPTION:** NDAL describes the product as a subscription/data-vending product; project entitlement has not been verified.
+- **OUT OF SCOPE:** a paid product is known but the user has chosen not to pursue a subscription in the current design.
 - **UNRESOLVED:** the reviewed official material does not settle the exact historical coverage, fields, entitlement, or delivery needed by this project.
 - **NOT SAMPLE-VERIFIED:** no permitted sample has yet been obtained and checked by this project.
 
@@ -172,31 +172,31 @@ Official contact published on NSE's EOD/Historical Data page: **marketdata@nse.c
 | Phase 2 acceptance item | Status | Evidence / remaining work |
 |---|---|---|
 | Official source identified for each planned report family | PARTIAL PASS | Official listings/specifications found for EOD bhavcopy, MII contract masters, NIFTY index, contract-wise price/volume, participant OI/volume and order/trade. Historical option-chain archive still unresolved. |
-| Authorised access method documented | PARTIAL PASS | NDAL documents SFTP for EOD O&T and online platform for historical O&T; public EOD report pages identified. Project-specific permissions/terms are not verified. |
-| Historical coverage documented | PARTIAL PASS | NSE FPI FAQ states historical F&O O&T since Jan 2008 and historical trade data since Jan 1994; current subscribed product's actual availability still needs written confirmation. |
+| Authorised access method documented | PARTIAL PASS | Official user-facing EOD report interfaces are identified. The intended manual download route is conditional on written confirmation of storage/ML/trading use; automated web collection is prohibited by NSE Terms. |
+| Historical coverage documented | IN PROGRESS | Candidate EOD report archive families identified; actual date coverage and file availability need permitted sample/date-range validation. Paid O&T coverage is outside current scope. |
 | Required and optional report families distinguished | PASS — first-pass | Coverage matrix above is the proposed classification; final mandatory status depends on the UDiFF schema and NDAL product decision. |
 | Exact source fields, units and schema versions verified | IN PROGRESS | Contract-master and O&T specifications reviewed; UDiFF v4 workbook and actual EOD exports remain to be inspected. |
 | Permitted source samples received and validated | NOT STARTED | No sample files have been obtained or processed. |
-| Order/trade linkage and order-book reconstruction feasibility proven | NOT STARTED | Requires entitled samples and tests for complete event coverage, ordering, timestamps, references and reconstruction. |
-| Project entitlement and commercial terms confirmed | PARTIAL / BLOCKED | Current domestic tariff is documented above, but there is no evidence of an active NDAL F&O subscription, approved agreement, project quote, confirmed usage category, credentials or sample. |
-| Historical chain/quote/depth coverage confirmed | PARTIAL / BLOCKED | F&O L1/L2 levels are identified in the NSE FAQ, but the historical product format, snapshot cadence, date span, fields and authorised sample remain unverified. |
+| Order/trade linkage and order-book reconstruction feasibility proven | OUT OF CURRENT SCOPE | Paid O&T/tick-by-tick data is not being pursued; no order-flow or order-book functionality will be claimed in the free EOD mode. |
+| Project entitlement and commercial terms confirmed | OUT OF CURRENT SCOPE | User confirmed there is no NDAL subscription and selected no-subscription EOD mode. Do not implement paid O&T access unless separately authorised later. |
+| Historical chain/quote/depth coverage confirmed | UNAVAILABLE IN CURRENT SCOPE | Public option-chain UI is not a historical dated archive. Historical quote/depth/IV files are not part of current EOD-only scope. |
 
 ### Phase 2 current blockers
 
-- **B1 — NDAL entitlement:** subscription status and applicable terms for F&O order/trade data are unknown.
-- **B2 — Official sample/schema validation:** UDiFF v4 workbook and actual representative data files need review; current schemas must not be guessed.
-- **B3 — Historical chain/quote archive:** public option-chain UI does not prove a historical archive; NDAL product coverage needs confirmation.
-- **B4 — Event reconstruction:** trade-to-order linkage, full event completeness and sequence integrity have not been demonstrated on a permitted sample.
+- **B1 — Usage rights:** written permission for persistent storage, ML training and trading/seller-intelligence use of the chosen EOD sources has not been obtained.
+- **B2 — Official sample/schema validation:** UDiFF v4 workbook and representative EOD files need review; current schemas must not be guessed.
+- **B3 — Report coverage:** historical date availability, required versus optional files and actual export formats need sample validation.
+- **B4 — Option-chain/order flow:** historical chain/quote/depth, order/trade events and order-book reconstruction are outside the current no-subscription EOD scope.
 - **B5 — Target coverage:** exact 22 dates will be established by Phase 3; this document does not claim date-specific report availability.
 
 ### Next Phase 2 actions
 
 1. Obtain the latest official UDiFF catalogue and F&O Bhavcopy format workbook and a permitted representative EOD ZIP; inspect headers, types, scale factors, null semantics and contract identifiers.
 2. Obtain a representative MII F&O contract master and a NIFTY 50 historical index CSV through the official download workflow; verify real fields and units without changing source bytes.
-3. Confirm whether the user/project already has an NDAL F&O subscription. If not, obtain the official current tariff/quotation and terms before any licensed-data access is attempted.
-4. Request permitted F&O Trim order/trade samples and test event ordering, jiffies conversion, order references, trade linkage and missing-stream detection.
-5. Obtain written NDAL confirmation on historical option-chain/quote/depth availability and the actual historical date range.
-6. Update this catalogue and the progress register with sample hashes, source dates, exact schema versions, entitlement evidence and test results. Do not mark Phase 2 complete until its acceptance checklist passes.
+3. Obtain written clarification from NSE covering manual downloads, persistent local/server storage, ML training, derived outputs and intended trading/seller-intelligence use. Do not assume the academic/non-commercial research route applies.
+4. After rights are confirmed, obtain permitted representative UDiFF, matching F&O-MII master, contract-wise price-volume and NIFTY index sample files; inspect actual fields, types, scales, nulls and date coverage.
+5. Identify mandatory versus supplementary reports and build the 22-session report coverage matrix from verified source evidence.
+6. Update this catalogue and the progress register with permitted sample hashes, source dates, schema versions, written permission reference and test results. Do not mark Phase 2 complete until its acceptance checklist passes.
 
 ## 8. Official NSE references
 
