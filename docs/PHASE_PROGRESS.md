@@ -180,6 +180,11 @@ Next action:
 | README configuration link | `849681fa1ab8c0e15f2beab8cabacf5b1f904d84` | Linked the configuration/operating standards. |
 | Final architecture conventions review | `076aa102eac6ccdc2da28ee26d6ec76d9b9d6e89` | Recorded PASS for configuration, logging, error handling, versioning, testing and native CI evidence. |
 | Phase 2 source catalogue | `a6b0c875359214a48568517fcb3d4a8bc29b0b4c` | Added official NSE source inventory, access/entitlement findings, candidate coverage matrix, known schema fields, unresolved items and Phase 2 acceptance checklist. |
+| Phase 2 progress register update | `d65a48b3e936a67adccf3a7e21198aa27fa10366` | Recorded Phase 2 authorisation, current IN PROGRESS state and first-pass official source research. |
+| Phase 2 roadmap status | `8316c61127518cc063255fa988889da66dfb428e` | Marked Phase 2 IN PROGRESS and linked the source catalogue. |
+| Architecture Phase 2 status | `f1aaecfbf2d6499fd7acb70dbb81acb6f6f0ea3c` | Reflected the source verification work and open entitlement/sample gates. |
+| README Phase 2 link | `4675f8e3440c0dd3f299ed1f95ffda60dd2eabdb` | Added the source catalogue and current Phase 2 status to project documentation links. |
+| Phase 2 progress register cleanup | `3d01b736dca0fb229cebb32e91f77cac8478e564` | Added the catalogue link and placed the Phase 2 source-catalogue entry in the change-history table. |
 
 **Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS; (5) configuration, logging, error handling, versioning and test conventions — PASS; (6) final Phase 1 acceptance review — PASS.
 
