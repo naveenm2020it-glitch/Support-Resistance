@@ -19,9 +19,9 @@ One record for an original source artifact.
 | `downloaded_at` | datetime | Download timestamp with timezone information |
 | `size_bytes` | integer | Original artifact size in bytes; non-negative integer, not bool |
 | `sha256` | string | 64-character hexadecimal digest of original bytes; canonicalised to lowercase |
-| `available_fields` | frozenset[string] | Fields actually observed after schema inspection |
+| `available_fields` | frozenset[string] | Iterable of non-empty field-name strings actually observed after schema inspection; canonicalised by trimming |
 | `validation_status` | AvailabilityStatus | `available`, `partial`, `unavailable`, `pending_eod` or `invalid` |
-| `validation_messages` | tuple[string] | Validation findings and reasons |
+| `validation_messages` | tuple[string] | Iterable of strings describing validation findings and reasons; plain string inputs are rejected |
 
 The delivery provider and exchange are separate concepts. The model can record an authorised provider name while ensuring the exchange represented is NSE. The model does not itself prove that a provider entitlement is valid; that evidence belongs to the Phase 2 source-access review. The artifact digest is the content reference used by downstream observations. The logical source context remains the provider, exchange, report type and report date; equal bytes do not remove the need to retain that context.
 
@@ -37,8 +37,8 @@ One report-family availability record for one numbered session in an analysis wi
 | `status` | AvailabilityStatus | Availability/validation state for the report |
 | `available_fields` | frozenset[string] | Fields actually present in that report |
 | `source_filename` | optional string | Original report basename when present |
-| `source_report_sha256` | optional string | Original report hash; required when status is `available` |
-| `validation_message` | optional string | Report-specific failure, pending or limitation details |
+| `source_report_sha256` | optional string | Original report hash; required with `source_filename` when status is `available` |
+| `validation_message` | optional string | Report-specific failure, pending or limitation details; non-string values are rejected |
 
 Record identity within an analysis run is `(session_number, report_type)`; the enclosing analysis-run context scopes this identity. The initial sequence helper handles one report family at a time. A complete report-family matrix and report-specific required-field validation are later validation-layer responsibilities.
 
@@ -61,7 +61,7 @@ One observed contract row from a validated source report.
 | `close` | optional number | Finite, non-negative source close/settlement value; not backfilled |
 | `iv` | optional number | Finite, non-negative value only when a valid IV value is genuinely supplied |
 
-Count fields must be integers; booleans and fractional values are rejected. Prices/IV must be finite numeric values, not booleans. Underlying is canonicalised on the immutable model at construction so equality, grouping and identity use the same symbol representation. The original source bytes remain available through the report hash and source-record locator.
+Count fields must be integers; booleans and fractional values are rejected. OI and volume cannot be negative; change in OI may be negative. Prices/IV must be finite, non-negative numeric values, not booleans. Underlying is canonicalised on the immutable model at construction so equality, grouping and identity use the same symbol representation. The original source bytes remain available through the report hash and source-record locator.
 
 Observation identity is `(session_date, underlying, expiry, strike, option_type, source_report_sha256, source_record_id)`. The source report digest plus record locator makes the observation auditable back to original bytes.
 
