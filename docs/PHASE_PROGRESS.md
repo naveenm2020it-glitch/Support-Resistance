@@ -112,6 +112,10 @@ Next action:
 | Change | Commit | Notes |
 |---|---|---|
 | Initial foundation | `8e8aff20808b6d507b64746dd55ded12509a3173` | Initial models, availability gate, multiple-strike foundation and tests; execution status not yet verified here. |
-| Approved requirements and phase workflow update | To be recorded after commit | Requirements and project workflow documentation updates. |
+| Requirements aligned with order-flow seller analysis | `280b70f5bcf7cb24b532fc0f46dbda17fde7717a` | Added authorised order/trade data, order-flow evidence hierarchy and revised 12-phase scope. |
+| 12-phase implementation roadmap | `c6bc652d37b3b6d6304be273edb3f995954804b1` | Added phase goals, work items, deliverables, dependencies and acceptance criteria. |
+| Phase progress register | `193074a40cd68789c0c3b92b85327a66845a1c3d` | Added statuses, repository code locations, commit/test evidence process and progress template. |
+| Development and data workflow | `a6c1ecac3dc2c3f1fa697e3981ecbd77f7906447` | Defined phase-wise code, tests, progress, data and safety workflow. |
+| README documentation links | `79f0aea138cd7a54d7b3fec49527ff68a0b8ddb4` | Added roadmap/progress links and code/data integrity conventions. | |
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
