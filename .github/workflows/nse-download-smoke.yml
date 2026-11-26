@@ -1,0 +1,90 @@
+name: NSE F&O report download smoke test
+
+on:
+  push:
+    branches:
+      - feature/nifty-seller-intelligence-foundation
+    paths:
+      - ".github/workflows/nse-download-smoke.yml"
+  workflow_dispatch:
+    inputs:
+      trade_date:
+        description: "Report date in YYYYMMDD format"
+        required: true
+        default: "20261030"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  download-and-validate:
+    name: Download one official F&O UDiFF report
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download from the official NSE archive
+        shell: bash
+        env:
+          TRADE_DATE: ${{ inputs.trade_date || '20261030' }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$TRADE_DATE" =~ ^[0-9]{8}$ ]]; then
+            echo "::error::trade_date must use YYYYMMDD format"
+            exit 1
+          fi
+
+          REPORT_NAME="BhavCopy_NSE_FO_0_0_0_${TRADE_DATE}_F_0000.csv.zip"
+          REPORT_URL="https://nsearchives.nseindia.com/content/fo/${REPORT_NAME}"
+          DOWNLOAD_DIR="${RUNNER_TEMP}/nse-report-download"
+          REPORT_PATH="${DOWNLOAD_DIR}/${REPORT_NAME}"
+
+          mkdir -p "$DOWNLOAD_DIR"
+          echo "Downloading official NSE F&O UDiFF report for ${TRADE_DATE}"
+          echo "Source: ${REPORT_URL}"
+
+          curl             --fail             --location             --show-error             --retry 2             --retry-delay 2             --connect-timeout 20             --max-time 120             --output "$REPORT_PATH"             "$REPORT_URL"
+
+          test -s "$REPORT_PATH"
+          echo "Downloaded bytes: $(wc -c < "$REPORT_PATH")"
+          file "$REPORT_PATH"
+
+      - name: Validate ZIP and inspect CSV schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          REPORT_PATH="$(find "$RUNNER_TEMP/nse-report-download" -maxdepth 1 -type f -name '*.zip' -print -quit)"
+          test -n "$REPORT_PATH"
+          unzip -t "$REPORT_PATH"
+
+          python - "$REPORT_PATH" <<'PY'
+          import csv
+          import sys
+          import zipfile
+
+          archive_path = sys.argv[1]
+          with zipfile.ZipFile(archive_path) as archive:
+              csv_names = [name for name in archive.namelist() if name.lower().endswith(".csv")]
+              if not csv_names:
+                  raise SystemExit("FAIL: ZIP contains no CSV file")
+              print("CSV members:", csv_names)
+              with archive.open(csv_names[0]) as raw:
+                  import io
+                  text = io.TextIOWrapper(raw, encoding="utf-8-sig", newline="")
+                  reader = csv.reader(text)
+                  header = next(reader, None)
+                  if not header:
+                      raise SystemExit("FAIL: CSV header is empty")
+                  print("Column count:", len(header))
+                  print("CSV header:", " | ".join(header))
+                  print("First data row:", next(reader, None))
+          PY
+
+          echo "SHA-256:"
+          sha256sum "$REPORT_PATH"
+
+      - name: Remove temporary market-data file
+        if: always()
+        shell: bash
+        run: rm -rf "${RUNNER_TEMP}/nse-report-download"
