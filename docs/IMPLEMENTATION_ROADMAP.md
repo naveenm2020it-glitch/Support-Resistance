@@ -162,97 +162,93 @@
 
 **Dependency:** Verified Ubuntu server access or another separately approved permanent archive.
 
-## Phase 7 — Parsing, order/trade linking and validation
+## Phase 7 — EOD report parsing and validation
 
-**Goal:** Parse source reports into a validated dataset while preserving lineage.
+**Free-source scope:** Parse only verified and permitted EOD report families. Order/trade event parsing, event linking and order-book replay are excluded from the current no-subscription route.
+
+**Goal:** Parse permitted EOD source reports into a validated dataset while preserving lineage.
 
 **Work items**
-- Implement parsers for each verified report format.
-- Parse EOD contract observations and reference contract data.
-- Parse order events and trade records when the entitled source supplies them.
-- Link trade records to order references using verified identifiers.
-- Reconstruct order-book state only if event completeness, sequencing and field semantics support it.
-- Validate date, instrument, expiry, strike, option type, units, duplicates and numeric ranges.
-- Track missing, partial and invalid fields.
-- Implement the 22-session mandatory data-availability gate.
+- Implement parsers for the Phase 2-verified UDiFF, daily contract-master, contract-wise price/volume and NIFTY index formats.
+- Parse EOD contract observations and contract reference data.
+- Align each observation to the correct report date, contract, expiry, strike and CE/PE type using the matching daily master.
+- Validate date, instrument, expiry, strike, option type, units, duplicates, row counts and numeric ranges.
+- Track missing, partial and invalid fields; keep source nulls distinct from numeric zero.
+- Implement the per-session/per-report availability matrix and the 22-session mandatory-data gate.
+- Preserve report hash and stable source-row locator on each normalised record.
 
-**Deliverables:** Parsers, normalised data model, order/trade event model, validation reports and availability matrix.
+**Deliverables:** Verified EOD parsers, normalised EOD data model, validation reports and availability matrix.
 
 **Acceptance criteria**
-- Each observation links to its source report and source row/event where possible.
-- Ambiguous or incomplete order-flow events remain unclassified.
+- Each normalised observation links to its source report and source row.
+- Contract mapping uses the correct date-specific contract master.
 - Missing data is never converted into zero or fabricated.
 - Required reports and fields pass validation before a dataset is marked complete.
+- No parser assumes fields that have not been verified in a real source sample.
 
-## Phase 8 — Multiple-strike CE/PE EOD analysis (order-flow only if separately authorised)
+## Phase 8 — Multiple-strike CE/PE EOD analysis
 
-**Free-source scope:** With EOD files alone, implement only contract-aligned EOD price, settlement, volume/contract count, turnover and OI/change-in-OI analysis where present. Order-flow, order-book reconstruction and aggressor-side classification remain unavailable unless a separately authorised, sufficiently complete tick/order/trade dataset is approved.
+**Current scope:** Analyse only observed EOD price, settlement, contract count/volume, turnover and OI/change-in-OI fields that are present in the verified report files. No order-flow or order-book replay.
 
 **Goal:** Analyse multiple strikes for both option sides across the 22 sessions.
 
 **Work items**
-- Align records by underlying, expiry, strike, option type and session/timestamp.
-- Calculate verified OI changes and price/volume changes.
-- Measure aggressive buy/sell flow where supported by reconstructed order-book evidence.
-- Calculate classified-flow coverage and keep ambiguous trades separate.
-- Measure sell-order additions, cancellations, executions, persistence and replenishment where order-event data permits.
+- Align records by underlying, expiry, strike, option type and session date.
+- Calculate EOD price/settlement, traded activity, turnover and OI changes where the source provides the necessary fields.
 - Compare strikes and neighbouring strike clusters.
 - Compare sessions 1–17 against 18–21 and session 22.
 - Preserve source and calculation lineage.
+- Report missing fields and contract coverage; do not construct a synthetic option-chain.
 
-**Deliverables:** Contract-alignment module, strike-wise CE/PE dataset, order-flow metrics and comparison outputs.
+**Deliverables:** Contract-alignment module, strike-wise CE/PE EOD dataset and comparison outputs.
 
 **Acceptance criteria**
 - Calculations can be traced to source observations.
 - Contract and expiry mismatches are prevented.
-- Aggressor classification is only used when supported by the available data.
-- OI remains an aggregate positioning measure, not proof of seller identity.
+- Missing fields remain unavailable rather than being estimated.
+- OI remains an aggregate positioning measure, not proof of seller identity or intent.
 
-## Phase 9 — EOD seller-positioning proxies and support/resistance zones
+## Phase 9 — EOD positioning proxies and support/resistance zones
 
-**Free-source scope:** Interpret only qualified EOD positioning proxies. Do not claim actual seller identity, confirmed writing/covering, passive absorption or intent from OI/price/volume.
+**Current scope:** Build explainable EOD indicators from verified price, volume/contract count, turnover, OI/change-in-OI, NIFTY index and adjacent-strike comparisons. These are market-positioning proxies, not identified seller activity.
 
-**Goal:** Produce evidence-based seller supply and positioning assessments.
+**Goal:** Produce evidence-based EOD positioning assessments and potential S1, S2, R1 and R2 zones.
 
 **Work items**
-- Separate aggressive sell pressure from passive seller absorption.
-- Evaluate potential short-side build-up only with appropriate supporting evidence.
-- Evaluate potential short covering and long liquidation with explicit caveats where open/close data is absent.
-- Combine order flow, order-book behaviour, OI, price, volume and premium/underlying context.
+- Compare option premium/settlement and OI changes across the same underlying, expiry, strike and CE/PE contract.
+- Combine EOD contract activity with NIFTY index OHLC context and optional participant-category reports.
 - Compare adjacent strikes and the 17 + 4 + 1 session groups.
-- Calculate S1, S2, R1 and R2 as potential zones.
-- Implement transparent features and calibrated scoring; do not assign arbitrary weights.
-- Produce evidence-quality tier and classification coverage with each result.
+- Calculate S1, S2, R1 and R2 as potential zones using a documented, testable methodology.
+- Show source coverage, unavailable fields and evidence-quality limitations.
+- Calibrate scoring only after historical evaluation; do not assign arbitrary confidence weights.
 
-**Deliverables:** Seller intelligence engine, seller-supply assessment, positioning explanation and support/resistance zones.
+**Deliverables:** EOD positioning features, support/resistance zones and evidence explanations.
 
 **Acceptance criteria**
-- No actual trader identity or short inventory is inferred from aggregate OI.
-- Every signal has evidence, limitations and coverage.
+- No actual trader identity, seller inventory, confirmed writing/covering, passive absorption or intent is inferred from aggregate OI/price/volume.
+- Every signal has traceable evidence, coverage and limitations.
 - Levels are explained and are not presented as guaranteed barriers.
 - Scores/thresholds are tested and calibrated before being presented as confidence.
 
-## Phase 10 — Potential seller-stress assessment (EOD-only limitations)
+## Phase 10 — EOD positioning-risk proxies
 
-**Free-source scope:** Intraday seller panic-exit/order-book detection is unavailable without authorised intraday event data. Any later EOD risk flag must be labelled a historical positioning/price-risk proxy, not a detected intraday exit.
+**Current scope:** The free EOD source tier cannot detect intraday seller panic exits, ask-side depletion or order-book stress. Any future EOD risk indicator must be explicitly labelled a historical price/positioning-risk proxy.
 
-**Goal:** Detect potential seller stress and exit pressure.
+**Goal:** Evaluate whether EOD price, volume and OI changes indicate unusual positioning or market risk.
 
 **Work items**
-- Detect aggressive buy-side executions against previously observed sell-side liquidity.
-- Evaluate ask-side depletion and reduced replenishment when order events exist.
-- Evaluate OI unwinding and covering proxies.
-- Detect unusual volume and premium changes.
-- Confirm signals across adjacent strikes and recent/baseline comparisons.
-- Produce Low/Moderate/High risk with reasons, affected strikes and evidence quality.
+- Evaluate unusual EOD volume/contract count and OI reductions or increases.
+- Compare option premium/settlement changes with NIFTY index movement.
+- Confirm changes across adjacent strikes and recent/baseline comparisons.
+- Produce a qualified risk indicator with reasons, affected strikes and data-coverage limitations.
 - Backtest and review false positives and missed events.
 
-**Deliverables:** Risk detectors, risk assessment output, explanations and historical evaluation report.
+**Deliverables:** EOD risk indicators, explanations and historical evaluation report.
 
 **Acceptance criteria**
 - An ordinary OI change does not automatically become a high-risk event.
-- Ambiguous evidence reduces confidence or produces an indeterminate result.
-- Risk outputs are qualified as potential conditions, not certain predictions.
+- Missing or weak evidence reduces confidence or produces an indeterminate result.
+- Risk outputs are qualified as potential conditions, not detected intraday exits or certain predictions.
 
 ## Phase 11 — Machine learning on permitted EOD history
 
