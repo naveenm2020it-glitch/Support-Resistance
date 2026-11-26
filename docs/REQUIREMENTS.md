@@ -1,6 +1,6 @@
-# NIFTY Seller Intelligence — Approved Requirements
+# NIFTY Seller Intelligence — Requirements
 
-**Status:** Approved requirements; implementation not authorised by this document  
+**Status:** Proposed Android-delivery revision recorded for user review; implementation is not authorised by this document
 **Repository:** `naveenm2020it-glitch/Support-Resistance`  
 **Target branch:** `feature/nifty-seller-intelligence-foundation`
 
@@ -253,9 +253,13 @@ Do not mark the 22-session dataset complete, or produce a fully qualified analys
 
 Define mandatory versus optional report families explicitly in the report catalogue. Optional fields absent from a source must be shown as unavailable, not treated as a failed mandatory field unless the data specification says they are required.
 
-## 14. Dashboard and analysis report
+## 14. Android application and analysis report
 
-The dashboard/report must display:
+The primary user-facing product is an Android phone application packaged as an installable APK. Do not deliver a web dashboard as the primary interface. A separate web dashboard is out of scope unless approved later. The application communicates with the Ubuntu-hosted backend through authenticated, documented, secure APIs; it must not contain NSE credentials, GitHub tokens, provider secrets or privileged collection logic, and it must not download restricted NSE reports directly.
+
+The app must support analysis date and expiry selection and present the following screens or tabs: Overview, CE Analysis, PE Analysis, Multiple Strikes, Seller Intelligence, Panic Risk, Historical Sessions, Data Coverage, and Settings. It must provide login and secure session management if authentication is required. Its mobile layout must be designed for Android phone screens, with accessible, readable charts and responsive states rather than a shrunken desktop dashboard.
+
+The app and generated analysis report must display:
 1. Selected underlying, analysis date and expiry.
 2. The exact 22 trading-session dates and the 17 + 4 + 1 grouping.
 3. Per-session, per-report availability and validation status.
@@ -269,7 +273,7 @@ The dashboard/report must display:
 11. Potential seller strength/weakness and evidence-quality tier.
 12. Potential seller panic-exit risk and its evidence.
 13. ML output and confidence only when the ML eligibility gate is passed.
-14. Warnings, assumptions, limitations and report-generation timestamp.
+14. Warnings, assumptions, limitations and report-generation timestamp, plus visible error, missing-data and collection/download-status notifications.
 
 ## 15. Technical and operational requirements
 
@@ -285,7 +289,8 @@ The solution should use a modular Python-based architecture with independently t
 - Seller-positioning, passive supply and support/resistance analysis.
 - Panic-exit risk assessment.
 - ML training/inference eligibility and evaluation.
-- Dashboard/report generation.
+- Backend API and analysis-report generation for the Android client.
+- Android application source, APK build/release and device/emulator verification in Phase 12.
 - Phase-wise code, documentation, progress tracking and acceptance evidence.
 - Logging, retries, monitoring and automated tests.
 
@@ -306,13 +311,13 @@ Ubuntu deployment and permanent archive configuration require verified server ac
 9. Seller intelligence, passive supply, S1/S2/R1/R2 and evidence-quality assessment.
 10. Seller panic-exit risk engine.
 11. ML using a sufficiently large validated historical dataset.
-12. Dashboard, automated tests, monitoring and Ubuntu deployment.
+12. Android application, secure API integration, testing, APK build/release and separate Ubuntu backend deployment.
 
 All phase implementation code, tests, configuration and technical documentation must be stored in this repository under the approved project branch workflow. Progress must be recorded in `docs/PHASE_PROGRESS.md`, with phase deliverables, status, blockers, commit references, test evidence and acceptance decisions. See `docs/IMPLEMENTATION_ROADMAP.md` and `docs/WORKFLOW.md`.
 
 Raw NSE reports, credentials and secrets must not be committed to Git history.
 
-**This document records requirements only.** Uploading it does not authorise implementation, downloading NSE reports, changing application code, deploying services, creating scheduled workflows or modifying any other repository files. Those activities require a separate instruction.
+**This document records requirements only.** This proposed Android-delivery revision does not authorise implementation, downloading NSE reports, changing application code, building an APK, deploying services, creating scheduled workflows or modifying application files. Those activities require separate approval of the revised plan.
 
 
 ## 17. User-selected no-subscription / free-source mode — 2026-11-26
@@ -368,3 +373,9 @@ A public current option-chain CSV is not a historical archive. Do not backfill p
 - Keep missing fields absent; never synthetically reconstruct historic IV, bid/ask, depth or order events.
 
 The implementation details and source restrictions are recorded in [FREE_SOURCE_MODE.md](FREE_SOURCE_MODE.md).
+
+### 17.6 Proposed target reconciliation
+
+The later Android-delivery proposal changes the desired collection workflow from manual-only to automatic collection of applicable reports, but only through an explicitly authorised source and access method. It does not grant an NSE entitlement, override published terms, or authorise public-site scraping or access-control circumvention. The recorded absence of an NDAL subscription and unresolved written use rights remain blockers for any collector that requires such access. Until a compliant source route and applicable use rights are verified, automatic collection remains a requirement that is blocked, not an implemented or approved workaround. The app may report missing/unavailable data and must not substitute fabricated history.
+
+Where entitled order/trade data is lawfully available, the target includes the evidence-led order/trade flow and passive seller-absorption analysis already specified above. Under the currently documented no-subscription EOD-only source set, these capabilities remain unavailable and must be presented as such.

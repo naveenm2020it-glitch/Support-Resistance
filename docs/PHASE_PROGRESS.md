@@ -21,14 +21,14 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 ## Current project status
 
 **As of:** 2026-11-26  
-**Overall status:** PHASE 1 COMPLETED; PHASE 2 IN PROGRESS ON THE FEATURE BRANCH; PR/RELEASE APPROVAL IS SEPARATE  
-**Implementation authorisation:** Phase 1 is completed. The user explicitly authorised Phase 2 on 2026-11-26. Phases 3–12 are not authorised by that instruction.  
-**Application implementation:** Phase 1 foundation is complete. The user confirmed there is no NDAL subscription and selected official EOD reports as the zero-subscription direction. The approved technical target remains manual user-supplied EOD file import. At the user's explicit request, a separate manually triggered experimental downloader now reproduces the three-host Requests fallback from the other NIFTY project; it is not an approved operational source route, has no schedule, and must not be repeatedly run. Persistent storage and ML/trading use remain gated on written data-use permission; no production archive, downstream analytics, live integration or deployment has been implemented. The draft PR remains unmerged; `main` is unchanged.
+**Overall status:** PHASE 1 COMPLETED; PHASE 2 IN PROGRESS ON THE FEATURE BRANCH; ANDROID-DELIVERY REVISION PENDING USER APPROVAL; PR/RELEASE APPROVAL IS SEPARATE
+**Implementation authorisation:** Phase 1 is completed. The user explicitly authorised Phase 2 on 2026-11-26. The Android delivery requirements and Kotlin/Jetpack Compose recommendation are recorded as a documentation-only proposal. No application implementation, Android project, APK build, or backend deployment is authorised by this revision. Phases 3–12 remain not authorised until the revised plan is separately approved.
+**Application implementation:** Phase 1 foundation is complete. The user confirmed there is no NDAL subscription and selected official EOD reports as the zero-subscription direction. The previously documented no-subscription technical route was manual user-supplied EOD file import. The proposed revised product target is automatic collection only through an authorised source route; current entitlement and use-rights blockers remain unresolved. At the user's explicit request, a separate manually triggered experimental downloader now reproduces the three-host Requests fallback from the other NIFTY project; it is not an approved operational source route, has no schedule, and must not be repeatedly run. Persistent storage and ML/trading use remain gated on written data-use permission; no production archive, downstream analytics, live integration or deployment has been implemented. The draft PR remains unmerged; `main` is unchanged.
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
 | 1 | Foundation and architecture | COMPLETED | Architecture/component boundaries, data-model identity/source lineage, runtime model validation, configuration/logging/error/versioning/test conventions and native CI have all passed review. Local mirror: 48 passed. Native GitHub Actions run #23: PASS (Python 3.11.18, 48 passed). All Phase 1 roadmap acceptance criteria are met on the feature branch. Draft PR #1 remains unmerged; `main` is unchanged pending separate release approval. |
-| 2 | NSE source and usage-rights verification | IN PROGRESS | User has no NDAL subscription and selected a no-subscription EOD file-import design. Official report families and limits are documented in `docs/FREE_SOURCE_MODE.md` and `docs/PHASE2_SOURCE_CATALOGUE.md`. Written permission for storage/ML/trading use and permitted real samples/schema validation remain open. Paid O&T, historical tick data and intraday order-flow are out of current scope. |
+| 2 | NSE source and usage-rights verification | IN PROGRESS | User has no NDAL subscription and selected a no-subscription EOD file-import design. Official report families and limits are documented in `docs/FREE_SOURCE_MODE.md` and `docs/PHASE2_SOURCE_CATALOGUE.md`. Written permission for storage/ML/trading use and permitted real samples/schema validation remain open. No authorised O&T, historical tick or intraday order-flow source is currently available; these remain unavailable unless entitlement and use rights are verified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | EOD report file ingestion and validation | NOT STARTED | Depends on Phase 2 permitted-use decision and verified schemas, plus Phase 3 session manifest. Current mode accepts user-supplied files only; no NSE public-page polling or scraper. |
 | 5 | Temporary GitHub storage and five-hour cleanup | NOT STARTED | Artifact lifecycle and deletion timing must be proven; do not assume native retention is five hours. |
@@ -38,7 +38,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 | 9 | Seller intelligence engine | NOT STARTED | Depends on Phase 8 evidence and a documented/calibrated methodology. |
 | 10 | Seller panic-exit risk engine | NOT STARTED | Depends on seller-intelligence features and historical evaluation data. |
 | 11 | Machine learning | NOT STARTED | Requires a substantially longer validated historical dataset and a defined prediction target. |
-| 12 | Dashboard, testing, monitoring and deployment | NOT STARTED | Depends on stable analytics and verified deployment access. |
+| 12 | Android application, testing, APK build and deployment | NOT STARTED | Proposed replacement for web-dashboard delivery. Requires separate approval, stable backend APIs/analytics, verified device or emulator test path, signing-key custody and verified backend deployment access. |
 
 ## Phase 2 execution evidence — 2026-11-26
 
@@ -167,6 +167,14 @@ Acceptance criteria:
 Reviewer decision:
 Next action:
 ```
+
+## Proposed Android delivery revision — 2026-11-26
+
+- Recorded the requested Android APK delivery target, secure Android-to-Ubuntu API boundary, Phase 12 APK testing/release criteria, and a Kotlin with Jetpack Compose recommendation for user review.
+- Compared Kotlin/Jetpack Compose, Flutter and React Native in `docs/ARCHITECTURE.md`; no Android project, dependency, charting library or build configuration has been implemented.
+- Updated requirements, roadmap, architecture, workflow, README and progress documentation only. No application source, backend code, build scripts, APK or deployment was changed.
+- Phase 2 remains IN PROGRESS. Automatic collection and order/trade flow require authorised access and applicable use rights; unresolved data-access restrictions remain in force.
+- **Approval gate:** do not begin Android/backend implementation, build an APK, or deploy the backend until the user separately approves the revised plan.
 
 ## Change history
 

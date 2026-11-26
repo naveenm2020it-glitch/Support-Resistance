@@ -1,6 +1,6 @@
 # NIFTY Seller Intelligence — Architecture Baseline
 
-**Status:** Phase 1 architecture boundary review completed. Phase 2 free-source EOD and usage-rights verification is in progress. The current technical direction is user-supplied EOD file import after rights confirmation; no NSE public-page collector or market-data integration has been implemented.  
+**Status:** Phase 1 architecture boundary review completed. Phase 2 source and usage-rights verification is in progress. The previously documented no-subscription mode uses user-supplied EOD files after rights confirmation; the proposed revised target is automated collection only through an authorised source route. Rights/entitlement remain unresolved and no automated public-site collector is authorised or implemented.
 **Working branch:** `feature/nifty-seller-intelligence-foundation`
 
 ## 1. Architecture objectives
@@ -25,7 +25,19 @@ The initial architecture is modular and phase-gated. Source acquisition, raw-fil
 | CE/PE EOD analysis | Build multi-strike metrics from verified EOD observations | 8 | Not implemented; order-flow/order-book analysis excluded from current no-subscription scope |
 | Seller and panic-risk assessment | Produce qualified signals and support/resistance zones | 9–10 | Not implemented |
 | Machine learning | Train and evaluate only on an eligible validated history | 11 | Not implemented |
-| Dashboard and deployment | Present results, monitor and deploy after acceptance | 12 | Not implemented |
+| Android application and deployment | Present results in an installable Android APK; integrate secure APIs; test and release separately from Ubuntu backend | 12 | Proposed; not implemented |
+
+## 2A. Proposed Android client architecture (pending approval)
+
+The Android phone application is the proposed primary UI; the Ubuntu backend is intended to own scheduled collection (only after an authorised source route is verified), source credentials, report validation/archival, analytics, ML and report generation. The app consumes only documented, authenticated APIs over TLS and receives analysis results, status, coverage and provenance summaries. It must not embed NSE credentials, GitHub tokens, data-provider secrets, privileged collection code, or directly download restricted reports. Backend and APK deployments remain separate.
+
+| Option | APK reliability and performance | Maintainability | Finance charts and backend security | Assessment for this Android-only deliverable |
+|---|---|---|---|---|
+| Kotlin + Jetpack Compose | Native Android packaging, UI and platform APIs | One native codebase and Kotlin toolchain | Native libraries and Android secure storage/network stacks; charting library must be selected and evaluated | **Recommended**: best alignment with Android-only scope and platform behaviour |
+| Flutter | Supports Android APK output with a consistent cross-platform rendering layer | One Dart UI codebase, but a separate language/toolchain | Chart packages available; secure API integration uses platform-supported TLS/secure storage packages | Strong alternative if iOS/cross-platform delivery becomes a requirement |
+| React Native | Android package through native Android build tooling; JavaScript plus native modules | JS/TS and native-module compatibility require maintenance | Charting and secure storage rely on ecosystem packages and native bridges | Viable, but no clear advantage for the currently Android-only target |
+
+**Proposed choice:** Kotlin with Jetpack Compose. It is a planning recommendation only; no Android project, dependency, chart library or build configuration is introduced before separate approval. Choose a maintained Compose-compatible financial charting library during implementation only after checking active maintenance, accessibility, license, performance with multi-strike data and supported screen sizes. Use platform secure storage for session material; never persist backend secrets in the APK. Authentication and API authorization details are subject to the approved backend security design.
 
 ## 3. Data flow and trust boundaries
 

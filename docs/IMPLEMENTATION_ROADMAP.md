@@ -1,6 +1,6 @@
 # NIFTY Seller Intelligence — Implementation Roadmap
 
-**Status:** Phase 1 COMPLETED; Phase 2 IN PROGRESS on the feature branch; Phases 3–12 remain NOT STARTED and require separate authorisation. PR #1 remains draft/unmerged; `main` is unchanged. See `docs/PHASE_PROGRESS.md`, `docs/PHASE2_SOURCE_CATALOGUE.md` and `docs/FREE_SOURCE_MODE.md` for current evidence.  
+**Status:** Phase 1 COMPLETED; Phase 2 IN PROGRESS on the feature branch; Phases 3–12 remain NOT STARTED. The Android-delivery revision is proposed for review and does not authorise implementation. PR #1 remains draft/unmerged; `main` is unchanged. See `docs/PHASE_PROGRESS.md`, `docs/PHASE2_SOURCE_CATALOGUE.md` and `docs/FREE_SOURCE_MODE.md` for current evidence.
 **Repository:** `naveenm2020it-glitch/Support-Resistance`  
 **Working branch:** `feature/nifty-seller-intelligence-foundation`  
 **Requirements:** `docs/REQUIREMENTS.md`  
@@ -47,7 +47,7 @@
 
 ## Phase 2 — NSE source and usage-rights verification
 
-**Status:** IN PROGRESS — the user selected a no-subscription direction and has no NDAL subscription. Official NSE EOD report families are inventoried in `docs/PHASE2_SOURCE_CATALOGUE.md`; the intended technical path is manual, user-supplied EOD files followed by local import. This is not a live or automated NSE feed. The NSE research-data programme is strictly academic/non-commercial, the website terms restrict storage/reuse and prohibit automated collection, and the project has not obtained written permission for persistent dataset creation or trading-related ML. UDiFF/export samples and exact field mappings also remain untested. Paid O&T and historical tick data are out of current scope.
+**Status:** IN PROGRESS — the user has no NDAL subscription. Official NSE EOD report families are inventoried in `docs/PHASE2_SOURCE_CATALOGUE.md`; the previously documented no-subscription path is manual, user-supplied EOD files. The proposed revised requirement is automatic collection through an authorised source/API/feed when available; entitlement and written data-use rights remain unresolved, so this target is blocked and no automated public-site collection is authorised. The NSE research-data programme is strictly academic/non-commercial, the website terms restrict storage/reuse and prohibit automated collection, and the project has not obtained written permission for persistent dataset creation or trading-related ML. UDiFF/export samples and exact field mappings also remain untested. Paid O&T and historical tick data are out of current scope.
 
 **Goal:** Identify an affordable official EOD input set and confirm that acquisition, storage, analysis and intended ML/trading use are permitted.
 
@@ -63,7 +63,8 @@
 **Deliverables:** EOD source catalogue, written data-use decision, verified sample/schema map, candidate 22-session report-coverage matrix and explicit unavailable-field register.
 
 **Acceptance criteria**
-- Every selected EOD report family has an official source and documented permitted acquisition route.
+- Every selected report family has an official source and documented, authorised acquisition route, including reports required by the proposed automated 22-session collection target.
+- Written rights and credentials/entitlement are verified before enabling scheduled or automated collection; public-site scraping and access-control circumvention remain prohibited.
 - Written permission/terms cover local or server-side retention, ML training, derived seller-intelligence signals and dashboard use for the intended project.
 - Each selected report has at least one permitted real sample whose date, format, fields, units and null semantics have been inspected.
 - Required versus optional report families are defined from verified samples, not assumed.
@@ -274,28 +275,37 @@
 - Performance is measured on chronological unseen data against a suitable baseline.
 - Confidence/probability is displayed only when supported by validation.
 
-## Phase 12 — Dashboard, testing, monitoring and deployment
+## Phase 12 — Android application, testing, APK build and deployment
 
-**Goal:** Deliver the complete application and operational workflow.
+**Status:** Proposed scope revision; implementation is not authorised until the user separately approves the revised plan.
+
+**Goal:** Deliver a native Android phone application as an installable APK, integrated with the separately deployed Ubuntu backend through secure, documented APIs. The Android app is the primary UI; a web dashboard is not the delivery target.
+
+**Technology decision for approval:** Kotlin with Jetpack Compose is recommended. It provides native Android UI and direct platform integration, strong fit with Android tooling and a single-platform codebase. Flutter is a viable alternative with a shared Dart UI layer and consistent rendering, but adds a second-language/toolchain choice for this Android-only deliverable. React Native is also viable, but introduces a JavaScript/native bridge ecosystem without a clear benefit for an Android-only app. For charting, use a maintained Android/Compose-compatible chart library selected and reviewed during implementation; keep charting behind app-owned data/view models to avoid coupling to a library. Confirm library health, accessibility, license, and phone-sized chart behaviour before adoption. Final library versions are deferred to the implementation phase.
 
 **Work items**
-- Build analysis-date, expiry and strike controls.
-- Display 22-session availability and 17 + 4 + 1 comparisons.
-- Display multiple-strike CE/PE analysis and order-flow coverage.
-- Display seller supply, S1/S2/R1/R2 and panic-exit risk.
-- Display ML only when eligible.
-- Show provenance, warnings, missing data and evidence quality.
-- Run unit, integration, data-quality, historical and end-to-end tests.
-- Configure monitoring, failure alerts, secure credentials and recovery.
-- Deploy to Ubuntu after server access and release approval are verified.
+- Design mobile-first UI/UX for Overview, CE Analysis, PE Analysis, Multiple Strikes, Seller Intelligence, Panic Risk, Historical Sessions, Data Coverage and Settings.
+- Integrate secure backend APIs; keep all privileged data collection and credentials on the backend.
+- Implement analysis date and expiry selection; surface the 22-session coverage and 17 + 4 + 1 comparison.
+- Implement seller position, CE/PE strength, aggressive flow and passive absorption when authorised data supports them, S1/S2/R1/R2, panic-exit risk and ML output only when eligible.
+- Implement loading, error, missing-data, download/progress, source, provenance and confidence states.
+- Implement accessible charts and multiple-strike visualisations that fit Android phone screens.
+- Test on representative Android screen sizes and a reliable Android emulator; test a physical Android device when available.
+- Build a debug APK for internal testing, then a signed release APK using signing material kept outside Git and protected CI/secret storage.
+- Verify installation and application/API functionality on an actual device or reliable emulator before release claims.
+- Record APK version/build number, release notes, backend API compatibility, installation instructions, build/test evidence and APK SHA-256 checksum.
+- Document versioning, signing-key custody/rotation and release process. Keep the Ubuntu backend as a separately deployed component; deploy only after its own access and release gates pass.
 
-**Deliverables:** Dashboard, report export, test evidence, monitoring and deployment documentation.
+**Deliverables:** Android source, secure API integration, verified debug/release APK artifacts, APK checksum, release notes, compatibility and installation documentation, test evidence, and separate backend deployment documentation.
 
 **Acceptance criteria**
-- The complete workflow is tested from analysis request to final report.
-- Failed collection, validation, archival and cleanup are visible.
-- Secrets do not enter Git.
-- Deployment is claimed complete only after a verified deployment and operational check.
+- The Android app is usable on supported phone sizes and exposes all required screens and states.
+- Backend/API integration is authenticated as required, transport-secured, documented and contains no privileged credentials in the APK.
+- Unsupported or unavailable data is visibly unavailable; no fabricated, simulated or substituted historical data is presented.
+- Debug and signed release APKs are built and their checksums/version metadata recorded; signing keys and secrets are excluded from Git.
+- Installation and core application/API flows are verified on an actual Android device or reliable Android emulator. A successful build command alone is not acceptance evidence.
+- Backend and app compatibility is documented, and backend deployment is independently verified before being described as deployed.
+- The workflow has unit, integration, data-quality, historical, API-contract and Android end-to-end test evidence; data access/rights and ML gates remain enforced.
 
 ## Milestone gates
 
@@ -305,6 +315,6 @@
 | M2 — Data pipeline | 4–7 | Authorised collection, storage, archival and validation demonstrated |
 | M3 — Analytics | 8–10 | Multiple-strike seller intelligence and risk tested against historical evidence |
 | M4 — ML | 11 | ML eligibility and out-of-sample evaluation passed |
-| M5 — Production | 12 | Dashboard, monitoring and deployment verified |
+| M5 — Production | 12 | Android APK install/functionality verified on a device or reliable emulator; API compatibility and any separately approved backend deployment verified |
 
 A milestone is not complete until its deliverables, tests and acceptance evidence are recorded in `docs/PHASE_PROGRESS.md`.

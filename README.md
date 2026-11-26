@@ -1,10 +1,10 @@
 # NIFTY Seller Intelligence
 
-A provenance-first NIFTY options research application. It analyses multiple CE/PE strikes for a selected expiry using genuine, validated historical exchange reports and qualified order-flow evidence where authorised data is available.
+A proposed Android-first, provenance-first NIFTY options intelligence application. The planned Android app will consume secure APIs from a separately deployed Ubuntu backend and analyse multiple CE/PE strikes for a selected expiry using genuine, validated historical exchange reports and qualified order-flow evidence where authorised data is available. The Android delivery revision is pending user approval; it is not implemented.
 
 ## Project documentation
 
-- [Approved requirements](docs/REQUIREMENTS.md)
+- [Requirements and proposed Android delivery](docs/REQUIREMENTS.md)
 - [Architecture baseline](docs/ARCHITECTURE.md)
 - [Data dictionary](docs/DATA_DICTIONARY.md)
 - [Configuration and operating standards](config/README.md)
@@ -19,7 +19,7 @@ A provenance-first NIFTY options research application. It analyses multiple CE/P
 
 The project is developed phase by phase on `feature/nifty-seller-intelligence-foundation`. Source code, tests, safe configuration templates, technical documentation and working progress are stored in this repository.
 
-The progress register records each phase's status, blockers, changed files, commit references, test evidence and acceptance decision. Phase 1 is complete; Phase 2 is in progress. The user selected a no-subscription EOD file-import direction. See the free-source mode document for NSE research eligibility, automated-download restrictions, ML scope and disabled order-flow capabilities. No live feed or scheduled/polled collector is implemented. A manually triggered experimental download workflow was added at the user's explicit request for technical reproduction only; it does not establish permission under NSE terms or authorise repeated collection. See [NSE EOD downloader experiment](docs/NSE_DOWNLOAD_EXPERIMENT.md). Code being committed does not by itself mean that a phase is complete.
+The progress register records each phase's status, blockers, changed files, commit references, test evidence and acceptance decision. Phase 1 is complete; Phase 2 is in progress. A proposed Android APK delivery revision is documented for user review; implementation remains unauthorised. The earlier no-subscription EOD file-import direction and its restrictions remain important to current source access: the new automated-collection target is blocked until an authorised source route and use rights are verified. No operational collector or live feed is established. A manually triggered experimental downloader exists for technical reproduction only; it does not establish permission under NSE terms or authorise repeated collection. See [NSE EOD downloader experiment](docs/NSE_DOWNLOAD_EXPERIMENT.md). Code being committed does not by itself mean that a phase is complete.
 
 `main` remains unchanged until separately approved. The roadmap is planning documentation and does not by itself authorise implementation or deployment.
 
@@ -50,12 +50,16 @@ Session identification must use a verified exchange trading calendar and actual 
 
 The planned evidence hierarchy prioritises reconstructed aggressive trade flow and passive sell-side order behaviour when the authorised order/trade data supports them. OI, premium, volume, underlying movement and adjacent-strike comparisons provide corroboration, not proof of actual seller identity or opening/closing intent.
 
+## Proposed Android technology
+
+Kotlin with Jetpack Compose is the recommended Android implementation, compared with Flutter and React Native in [Architecture](docs/ARCHITECTURE.md). This is a planning recommendation only; it requires separate approval before Android development begins.
+
 ## Code locations
 
 - Python application: `src/nifty_seller_intelligence/`
 - Tests: `tests/`
 - Non-secret configuration: `config/`
-- Dashboard: `dashboard/`
+- Proposed Android application: source directory to be selected and documented after plan approval; no Android source is implemented yet.
 - Documentation and progress: `docs/`
 
 No production downloader, live data substitution or deployment is enabled merely by the existing foundation.
