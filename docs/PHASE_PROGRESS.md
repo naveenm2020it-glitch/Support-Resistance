@@ -207,6 +207,8 @@ Next action:
 | Future paid-source questions clarified | `1616565a8ae27a447d51eeaa1f5ea1e29c458f81` | Kept NDAL enquiry questions only as an optional future reference, not a current dependency. |
 | Roadmap EOD analytics scope | `431d092380a27f919b56b0bea24c64de3ede6aab` | Replaced order-flow and intraday-risk implementation work with EOD-only parsing, positioning and risk-proxy scope. |
 | Architecture EOD source design | `81145b1033bab949860183340b3522a6180ab75f` | Updated component boundaries and rights/usage gates for the no-subscription EOD design. |
+| Phase 2 candidate EOD source acceptance | `fb912e0dc691753f805bfcfb51466a01ffaeff57` | Marked candidate EOD source families identified and excluded historical option-chain/quote/depth from current scope. |
+| Free-source reference cleanup | `7074646b133fa8002ee643b152e4942672e9a366` | Kept the free-source policy references to the NSE research policy, Research Initiatives and Terms of Use pages verified in this review. |
 
 **Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS; (5) configuration, logging, error handling, versioning and test conventions — PASS; (6) final Phase 1 acceptance review — PASS.
 
