@@ -73,7 +73,9 @@ Collect the following report families where they are published and accessible un
 5. **Historical OI reports:** OI information where separately published and relevant.
 6. **Participant-wise OI reports:** broad participant-category information; do not represent these as per-strike participant positions.
 7. **Historical option-chain reports:** only for dates and fields for which an official historical source actually provides them.
-8. **Other relevant official NSE reports:** only when justified by the data specification and available through an authorised source.
+8. **F&O Order data:** authorised historical order-event data, including order identifiers, timestamps, buy/sell side, price, quantity, additions, modifications and cancellations where the selected product supplies them.
+9. **F&O Trade data:** authorised historical trade records, including trade identifiers, timestamps, price, quantity and linked buy/sell order identifiers where supplied.
+10. **Other relevant official NSE reports:** only when justified by the data specification and available through an authorised source.
 
 The collector must maintain a report catalogue describing which report families are required, optional, date-specific and applicable to each analysis. A report that does not exist for a date or is not officially accessible must be recorded as unavailable; it must not be manufactured.
 
@@ -159,23 +161,42 @@ Where the official source contains the fields, capture:
 - Implied volatility (IV), only when the source actually supplies a valid IV field.
 - Bid, ask, market depth or other quote fields, only when an entitled source actually supplies them.
 
+Where authorised order/trade products provide them, also preserve order ID, trade ID, buy/sell order references, event timestamp, order side, order event type, execution price and executed quantity. Link trade events to their referenced order events only when identifiers and timestamps support the match. Reconstruct order-book state only when the acquired event stream is sufficiently complete and correctly sequenced; otherwise mark aggressor classification and order-book metrics unavailable.
+
 Align observations by underlying, expiry, strike, option type and session date. Retain source-field definitions and units. Do not treat missing fields as zero. Do not invent historical IV, bid/ask, depth or full option-chain snapshots from a bhavcopy.
 
 A UDiFF EOD bhavcopy is contract-level EOD data; it is not, by itself, a full historical option-chain or intraday quote/depth record.
 
 ## 9. Seller positioning interpretation
 
-Compare:
-- CE-side and PE-side OI and changes.
-- Price behaviour alongside OI changes.
-- Traded volume and activity.
-- Adjacent and multiple strike behaviour.
-- Sessions 1–17 baseline against sessions 18–21.
-- Session 22 against both the baseline and recent period.
+Use an evidence hierarchy rather than the four-quadrant OI/price heuristic. The primary method, when the necessary authorised data is available, is trade/order-flow analysis; aggregate OI, price and volume remain supporting evidence.
 
-Outputs may describe **potential** positioning accumulation, unwinding, strengthening or weakening. They must disclose the supporting observations and relevant missing data.
+### 9.1 Aggressive trade-flow evidence
+- Reconstruct the order-book state immediately before each execution from correctly sequenced order events, where the acquired product provides sufficiently complete order data.
+- Classify an execution as buyer-initiated or seller-initiated only when the order-book evidence supports that classification.
+- Link trades to buy/sell order references where the source provides reliable identifiers.
+- Mark midpoint, stale-quote, crossed-book, missing-event, complex-trade or otherwise ambiguous executions as unclassified rather than guessing.
+- Report aggressive sell volume/value and aggressive buy volume/value separately, including classified-quantity coverage.
 
-Do not claim to identify actual option sellers, their entry prices, their intent or their positions from aggregate OI/volume/price data alone. Participant-wise OI is category-level data and must not be presented as strike-level participant identity.
+### 9.2 Passive sell-side supply and absorption
+Where order-event data supports it, measure sell-order additions, cancellations, executions, persistence and replenishment at the ask. Repeated sell-side replenishment while aggressive buyers execute into the ask may indicate passive sell-side absorption. Displayed liquidity is not proof of hidden inventory or an identified writer.
+
+### 9.3 Position build-up and close/open ambiguity
+- Use explicit open/close or position-effect fields only if an authorised source actually supplies them and their semantics are verified.
+- Otherwise use correctly aligned intraday/EOD OI snapshots as aggregate net-position evidence, not as proof that a specific trade opened or closed a short.
+- Compare OI only for the same underlying, expiry, strike and option type.
+- Label OI-based writing/covering interpretations as potential and disclose the limitations.
+
+### 9.4 Premium and underlying confirmation
+Where synchronised and valid inputs exist, evaluate option premium movement relative to underlying movement and available volatility/time inputs. Any Greek-based residual or derived feature must state its model, inputs and assumptions. Do not manufacture IV, quotes or depth.
+
+### 9.5 Multi-strike and 17 + 4 + 1 confirmation
+Compare CE/PE order-flow and positioning evidence across adjacent strikes, then compare sessions 1–17 against sessions 18–21 and session 22. Distinguish strike-local signals from wider strike-cluster signals.
+
+### 9.6 Required outputs
+Classify evidence into separate concepts such as aggressive sell pressure, passive seller absorption, potential short-side build-up, potential short covering, potential long liquidation and mixed/indeterminate activity. Provide the supporting observations, classified-flow coverage, missing data and evidence-quality tier for each output.
+
+Do not claim to identify actual option sellers, their entry prices, intent or individual positions unless a source explicitly and lawfully supports that claim. Trade records show both sides of a transaction; an aggressor side must be inferred from adequate market-event evidence, not from the existence of buy/sell order IDs alone. Participant-wise OI is category-level data and must not be presented as strike-level participant identity.
 
 ## 10. Support and resistance zones
 
@@ -190,9 +211,12 @@ Use multiple-strike evidence, OI and OI changes where available, price behaviour
 ## 11. Potential seller panic-exit risk
 
 Assess potential seller stress or panic-exit risk using observable signals such as:
+- Aggressive buy-side executions against previously observed sell-side liquidity.
+- Short-covering evidence, where opening/closing data supports it, or qualified OI/price proxies otherwise.
+- Ask-side liquidity depletion or reduced replenishment, where valid order events exist.
 - Significant OI reduction/unwinding.
-- Price movement adverse to a previously observed positioning zone.
-- Unusual or rising traded volume.
+- Option premium movement adverse to a previously observed seller-supply zone.
+- Unusual traded volume and changes in classified aggressive flow.
 - Similar changes across adjacent strikes.
 - Recent positioning diverging from the 17-session baseline.
 
@@ -237,28 +261,32 @@ The dashboard/report must display:
 3. Per-session, per-report availability and validation status.
 4. Data coverage, missing fields and source/provenance information.
 5. Multiple-strike CE and PE analysis.
-6. OI, change in OI, volume and price evidence.
-7. Baseline versus recent versus selected EOD comparison.
-8. S1, S2, R1 and R2 zones with supporting evidence.
-9. Potential seller strength/weakness.
-10. Potential seller panic-exit risk and its evidence.
-11. ML output and confidence only when the ML eligibility gate is passed.
-12. Warnings, assumptions, limitations and report-generation timestamp.
+6. Aggressive buy/sell flow, classification coverage and order-book evidence where available.
+7. Passive sell-side supply/replenishment evidence where available.
+8. OI, change in OI, volume and price evidence.
+9. Baseline versus recent versus selected EOD comparison.
+10. S1, S2, R1 and R2 zones with supporting evidence.
+11. Potential seller strength/weakness and evidence-quality tier.
+12. Potential seller panic-exit risk and its evidence.
+13. ML output and confidence only when the ML eligibility gate is passed.
+14. Warnings, assumptions, limitations and report-generation timestamp.
 
 ## 15. Technical and operational requirements
 
 The solution should use a modular Python-based architecture with independently testable components for:
 - Trading-session calendar and 22-session selection.
-- Authorised report collection.
+- Authorised report collection, including applicable order and trade products.
 - Temporary GitHub artifact storage and five-hour expiry cleanup.
 - Permanent raw archive and transfer verification.
 - Provenance manifests and data validation.
-- Report parsing and normalisation.
+- Report parsing, order/trade event linking and normalisation.
+- Order-book reconstruction and aggressive-flow classification where the acquired data supports it.
 - Multiple-strike CE/PE analysis.
-- Seller-positioning and support/resistance analysis.
+- Seller-positioning, passive supply and support/resistance analysis.
 - Panic-exit risk assessment.
 - ML training/inference eligibility and evaluation.
 - Dashboard/report generation.
+- Phase-wise code, documentation, progress tracking and acceptance evidence.
 - Logging, retries, monitoring and automated tests.
 
 Secrets, access tokens and data-provider credentials must be stored in approved secret-management facilities, never committed to the repository or written into logs.
@@ -267,15 +295,21 @@ Ubuntu deployment and permanent archive configuration require verified server ac
 
 ## 16. Development phases (planning only)
 
-1. Finalise and store this approved requirements document.
-2. Confirm authorised NSE/data-provider access and report availability.
-3. Design and test the automatic 22-session collector.
-4. Implement GitHub temporary storage with verified five-hour automatic cleanup.
-5. Configure permanent raw archive and transfer verification.
-6. Implement provenance, validation and the availability gate.
-7. Implement multiple-strike CE/PE parsing and analysis.
-8. Implement seller-positioning, S1/S2/R1/R2 and panic-risk analytics.
-9. Add ML only after the historical-data eligibility requirements are met.
-10. Build dashboard, tests, monitoring and Ubuntu deployment.
+1. Foundation and architecture.
+2. NSE data access and historical report coverage verification.
+3. 22-session calendar engine.
+4. Automatic collection of EOD, order and trade reports through authorised access.
+5. Temporary GitHub-associated report storage and verified five-hour cleanup.
+6. Permanent raw archive, provenance and transfer verification.
+7. Parsing, order/trade linking, validation and the availability gate.
+8. Multiple-strike CE/PE and order-flow analysis.
+9. Seller intelligence, passive supply, S1/S2/R1/R2 and evidence-quality assessment.
+10. Seller panic-exit risk engine.
+11. ML using a sufficiently large validated historical dataset.
+12. Dashboard, automated tests, monitoring and Ubuntu deployment.
+
+All phase implementation code, tests, configuration and technical documentation must be stored in this repository under the approved project branch workflow. Progress must be recorded in `docs/PHASE_PROGRESS.md`, with phase deliverables, status, blockers, commit references, test evidence and acceptance decisions. See `docs/IMPLEMENTATION_ROADMAP.md` and `docs/WORKFLOW.md`.
+
+Raw NSE reports, credentials and secrets must not be committed to Git history.
 
 **This document records requirements only.** Uploading it does not authorise implementation, downloading NSE reports, changing application code, deploying services, creating scheduled workflows or modifying any other repository files. Those activities require a separate instruction.
