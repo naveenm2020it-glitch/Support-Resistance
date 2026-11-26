@@ -25,7 +25,7 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
-| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Model validation review: PASS. Local mirrored install/test execution: 48 passed; native GitHub Actions result and final Phase 1 acceptance remain outstanding. Draft PR #1 is open for CI/review only; no check-run evidence is currently returned, and it has not been merged. |
+| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Model validation review: PASS. Local mirrored install/test execution: 48 passed. Native GitHub Actions run #23: PASS (Python 3.11.18, 48 passed). Final Phase 1 acceptance review remains outstanding. Draft PR #1 is open, unmerged and leaves `main` unchanged. |
 | 2 | NSE data access and source verification | NOT STARTED | Authorised access and historical availability for order/trade and other report families must be verified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
@@ -45,7 +45,9 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 - Test environment: local test mirror assembled from the exact Phase 1 source and test contents retrieved from this branch. A native `git clone` was unavailable in the execution environment because GitHub DNS resolution failed.
 - Package installation: `python -m pip install -e ".[dev]" --no-build-isolation` passed on Python 3.13.5. The GitHub Actions workflow targets Python 3.11, so this local run is not a substitute for that native runner.
 - Additional check: `python -m compileall -q src tests` passed on the same local mirror.
-- CI: `.github/workflows/phase1-tests.yml` was added to run pytest on pushes to the working branch and pull requests targeting `main`. Draft PR #1 is open, but the available GitHub workflow/status lookup returned no run or status records; native GitHub Actions execution remains unverified.
+- CI workflow: `.github/workflows/phase1-tests.yml` runs on pushes to the feature branch and pull requests targeting `main`. Actions are pinned to full commit SHAs for checkout v7.0.1 and setup-python v7.1.0.
+- Native CI: GitHub Actions run #23 (`45779029917`) completed successfully on the PR merge ref. Python 3.11.18 setup and editable package installation succeeded; `python -m pytest -q` reported **48 passed in 0.05s**.
+- PR: [#1 — Phase 1: foundation architecture and data contracts](https://github.com/naveenm2020it-glitch/Support-Resistance/pull/1) is draft and unmerged; it does not change `main`.
 - PR: [#1 — Phase 1: foundation architecture and data contracts](https://github.com/naveenm2020it-glitch/Support-Resistance/pull/1) is draft, unmerged and does not change `main`.
 - Scope limitation: `validate_22_sessions` validates the 22-record sequence for one report family only. It is not the final per-session/per-report coverage and required-field gate.
 
@@ -145,9 +147,11 @@ Next action:
 | Model collection/status validation | `3739ff94c8851eeaa218353fdc0963b70b3bfc02` | Validated field/message collections and report/session validation states at runtime. |
 | Model validation regression tests | `a021c6795ea0d75e7f2bc3974f522a1f10324b94` | Added edge-case tests for collection types, required source references, invalid statuses and negative counts. |
 | Model validation data dictionary | `e07ed0196b981b95b63a397eac0c811680119c2b` | Documented runtime field collection and numeric constraints. |
+| CI action pinning and bounded runtime | `0d3c33617c1e21b2695adfe3434335831f8fcca3` | Pinned checkout/setup-python to full SHAs and added a 10-minute job limit. |
+| Native GitHub Actions run #23 | `45779029917` | PR merge-ref run passed on Python 3.11.18; package install succeeded and pytest reported 48 passed. |
 
-**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS.
+**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS.
 
-**Next action:** Obtain a native GitHub Actions result for PR #1 or the feature-branch push, then perform the final Phase 1 acceptance review. Do not merge PR #1 or close Phase 1 without the required evidence and separate approval.
+**Next action:** Perform the final Phase 1 acceptance review against `docs/IMPLEMENTATION_ROADMAP.md` and the approved requirements. Do not merge PR #1; `main` remains unchanged pending separate approval.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
