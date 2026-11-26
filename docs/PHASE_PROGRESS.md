@@ -205,9 +205,6 @@ Next action:
 | Phase 2 EOD-only catalogue refinement | `2e5eb6e002739c63f850ee5be5cb3f881f070f0b` | Marked paid NDAL order/trade, historical tick and historical quote/depth products out of current scope; focused acceptance on permitted EOD files. |
 | Manual workflow sequencing correction | `f9bba6ace277fdb91e7ecc2d6272f5ed3c5f252b` | Fixed the local EOD ingestion workflow sequence. |
 | Future paid-source questions clarified | `1616565a8ae27a447d51eeaa1f5ea1e29c458f81` | Kept NDAL enquiry questions only as an optional future reference, not a current dependency. |
-| Phase 2 source catalogue free-route update | `2e5eb6e002739c63f850ee5be5cb3f881f070f0b` | Refocused Phase 2 source decisions on permitted EOD reports and marked paid NDAL/quote-depth products out of scope. |
-| Workflow step order correction | `f9bba6ace277fdb91e7ecc2d6272f5ed3c5f252b` | Corrected numbered steps in the manual EOD workflow. |
-| Paid NDAL questions marked optional | `1616565a8ae27a447d51eeaa1f5ea1e29c458f81` | Retained paid NDAL questions only as future reference, not a current dependency. |
 | Roadmap EOD analytics scope | `431d092380a27f919b56b0bea24c64de3ede6aab` | Replaced order-flow and intraday-risk implementation work with EOD-only parsing, positioning and risk-proxy scope. |
 | Architecture EOD source design | `81145b1033bab949860183340b3522a6180ab75f` | Updated component boundaries and rights/usage gates for the no-subscription EOD design. |
 
