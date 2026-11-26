@@ -321,8 +321,8 @@ Raw NSE reports, credentials and secrets must not be committed to Git history.
 
 ### 17.1 Operating model
 
-- Use official NSE/NIFTY Indices EOD reports that are available for permitted user-initiated download, subject to the applicable usage rights.
-- Ingest user-supplied original files through a local/file-import workflow; preserve original bytes and provenance.
+- The technical target is user-initiated download through an official NSE/NIFTY Indices report interface followed by local file import, but only after the applicable download, storage and intended-use rights are confirmed.
+- Ingest user-supplied original files through a local/file-import workflow only when the user has a permitted basis to retain and process them; preserve original bytes and provenance.
 - Do not poll, scrape, automate browser downloads from, or reverse-engineer NSE public report pages. NSE's website Terms of Use prohibit systematic/automated data collection.
 - Do not call this a live feed. The no-subscription source mode is a manual, file-based EOD import.
 - A future authorised/licensed feed can be considered only after a separate user decision and written access/usage rights.
@@ -341,14 +341,16 @@ The exact field map, null semantics, scales, units and historical date coverage 
 
 ### 17.3 Data-use eligibility gate
 
-NSE's current disclaimer states that its no-cost research-oriented data route (up to an aggregate 2 GB) is restricted to individuals from accredited academic institutions, recognised research organisations and think tanks, and excludes commercial, speculative or investigative purposes. The NSE research page also limits research data to academic and non-commercial use. The user/project has not established eligibility or received approval.
+NSE's Data List Under the NSE Data Sharing Policy classifies specified derivatives contract-wise price-volume reports and daily/monthly F&O report archives in its first, freely available research-data basket for non-commercial academic research. The same policy places voluminous historical EOD and tick-by-tick datasets above 2 GB in a separate chargeable basket. NSE's Research Initiatives page states that research data is strictly limited to academic and non-commercial use. NSE's website Terms of Use (clauses 8–9) restrict copying/storage and redistribution without prior written permission (subject to the terms' download wording) and prohibit systematic or automated collection.
+
+The user/project has no NDAL subscription and has not established an academic/non-commercial research entitlement or a written licence for a trading/seller-intelligence/ML use.
 
 Therefore:
-- Do not assume the project's trading/seller-signal use qualifies for NSE's free research-data scheme.
-- Before using downloaded reports in an operational trading/signal product or training such a model, obtain written NSE confirmation that the specific access, storage and intended use are permitted.
-- If the work is eligible academic/non-commercial research, follow NSE's Data Seeking Request process and any NDA/reporting requirements.
-- NSE lists historical EOD and tick-by-tick historical datasets above 2 GB in a separate chargeable voluminous-data basket. Do not claim those large datasets are free.
-- Public visibility or a download button does not authorise scraping, redistribution or broader reuse.
+- Do not assume the project's trading/seller-signal use qualifies for NSE's no-cost academic research-data route.
+- Before retaining downloaded reports in a persistent dataset or using them to train ML for trading/signal decisions, obtain written NSE confirmation covering the source, acquisition, storage, model-training purpose and derived-output/dashboard use.
+- If the work is separately approved as eligible academic/non-commercial research, follow NSE's Data Seeking Request process and any NDA/reporting requirements.
+- NSE identifies voluminous historical EOD and tick-by-tick datasets above 2 GB as chargeable. Do not claim those large datasets are free.
+- Public visibility or a download button does not authorise scraping, automated collection, bulk storage or broader reuse.
 
 ### 17.4 Feature boundary
 
