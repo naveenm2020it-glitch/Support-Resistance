@@ -20,17 +20,17 @@ Follow the 12 phases in `docs/IMPLEMENTATION_ROADMAP.md`:
 1. Foundation and architecture.
 2. NSE data access and source verification.
 3. 22-session calendar engine.
-4. Automatic historical report collector.
+4. EOD report file ingestion and validation (manual source files only in the current no-subscription mode).
 5. Temporary GitHub storage and five-hour cleanup.
 6. Permanent archive and provenance.
-7. Parsing, order/trade linking and validation.
-8. Multiple-strike CE/PE and order-flow analysis.
+7. Parsing and validation of permitted EOD reports (order/trade linking only if a separately authorised source is later approved).
+8. Multiple-strike CE/PE EOD analysis; order-flow is excluded without separately authorised intraday event data.
 9. Seller intelligence engine.
-10. Seller panic-exit risk engine.
+10. EOD positioning-risk proxies; intraday panic-exit detection is excluded without authorised event data.
 11. Machine learning.
 12. Dashboard, testing, monitoring and deployment.
 
-Do not skip a blocked data-access, archive or validation dependency by inventing or substituting data.
+Do not skip a blocked data-access, usage-rights, archive or validation dependency by inventing or substituting data. NSE website terms prohibit automated collection; no-subscription mode uses user-supplied EOD files only, after permitted use is confirmed.
 
 ## 3. GitHub code and progress storage
 
@@ -48,25 +48,24 @@ Do not skip a blocked data-access, archive or validation dependency by inventing
 2. Resolve 22 valid completed F&O trading sessions using a verified exchange calendar and actual report dates.
 3. Assign sessions 1–17 to the baseline, 18–21 to recent changes and 22 to the selected completed EOD session.
 4. Identify required official reports for each date using the verified report catalogue.
-5. Acquire reports only through an authorised source and permitted access method.
-6. Register each report and its source/date/file metadata.
-7. Store temporary report copies in the approved repository-associated temporary storage with a separately tracked five-hour expiry.
-8. Transfer originals to the approved permanent raw archive and verify SHA-256 before normal temporary deletion.
+5. In the current no-subscription mode, the user may manually download candidate EOD reports through official interfaces only where download and intended use are permitted. Do not automate NSE public-page collection.
+6. Before importing or retaining any report, confirm the source terms permit the intended storage, ML training and trading/signal use. A public download control alone is not a data-use licence.
+7. Import only user-supplied original files through the local importer; record source/date/file metadata and SHA-256.
+8. Keep persistent raw storage, GitHub temporary artifacts and permanent archive disabled until the Phase 2 written data-use decision and later storage-phase safeguards are approved.
 9. Validate date, archive integrity, checksum, format, schema and required fields.
 10. Parse working copies only; preserve original raw files unchanged.
-11. Link order and trade events only when the acquired fields and identifiers support reliable matching.
-12. Reconstruct order-book/aggressor behaviour only when event completeness and sequencing support it; classify ambiguous events as unclassified.
+11. In the current free EOD mode, do not attempt order/trade event linking or order-book reconstruction. Keep order flow, aggressor classification and passive seller replenishment unavailable unless a separate authorised event-data source is approved later.
 13. Normalise underlying, expiry, strike, option type and session/timestamp while preserving source values and units.
 14. Build multi-strike CE and PE datasets from observed rows.
 15. Check 22-session coverage and required fields before full analysis.
 16. Compare sessions 1–17, sessions 18–21 and session 22.
-17. Produce seller-flow, potential-positioning, support/resistance and panic-risk assessments with evidence quality and limitations.
+17. Produce qualified EOD positioning proxies and support/resistance assessments with evidence quality and limitations. Do not label them as seller identity, order flow or intraday panic exits.
 18. Permit ML only after its longer-history eligibility and evaluation requirements pass.
 19. Generate an output that includes source coverage, provenance, calculations, findings and limitations.
 
 ## 5. Completion gate
 
-Analysis status is COMPLETE only when all 22 target sessions have validated required core reports and required fields are present. Otherwise status is PARTIAL or BLOCKED with exact session/field failures. A data-coverage failure must never be disguised as a successful analysis. ML must not run under a false COMPLETE status.
+Analysis status is COMPLETE only when all 22 target sessions have validated required core reports, required fields are present, and source acquisition/storage/analysis rights are confirmed. Otherwise status is PARTIAL or BLOCKED with exact session/field/rights failures. A data-coverage or rights failure must never be disguised as a successful analysis. ML must not run under a false COMPLETE status or on data whose ML/trading use is not permitted.
 
 ## 6. 17 + 4 + 1
 
@@ -78,11 +77,10 @@ Analysis status is COMPLETE only when all 22 target sessions have validated requ
 
 ## 7. Seller-intelligence evidence hierarchy
 
-1. Reconstructed aggressive trade flow from reliable order/trade events, when available.
-2. Passive sell-side supply, order persistence and replenishment, when reliable order events are available.
-3. OI and position-change evidence, with open/close ambiguity disclosed.
-4. Option premium and underlying context using only valid synchronised inputs.
-5. Adjacent-strike and historical 17 + 4 + 1 confirmation.
+1. In the current no-subscription EOD mode: contract-level EOD price, settlement, traded activity and OI/change-in-OI where present.
+2. NIFTY index EOD context and adjacent-strike/expiry-aligned comparisons.
+3. Optional participant-category aggregates, with their scope limitations stated.
+4. Reconstructed aggressive flow, passive sell-side replenishment and order-book evidence are excluded unless a separately authorised event-data source is approved.
 
 Do not identify a seller or claim a new short solely from OI, price or volume. An execution always has both sides; aggressor classification requires adequate order-book evidence. Missing or ambiguous evidence must remain unclassified.
 
