@@ -19,13 +19,13 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 ## Current project status
 
 **As of:** 2026-11-26  
-**Overall status:** FOUNDATION HARDENING / PHASE 1 IN PROGRESS  
+**Overall status:** PHASE 1 COMPLETED ON THE FEATURE BRANCH; PR/RELEASE APPROVAL IS SEPARATE  
 **Implementation authorisation:** Phase 1 work has been explicitly started by user instruction. This does not authorise Phases 2–12.  
-**Application implementation:** Only Phase 1 foundation models, validation boundaries, tests and architecture documentation have been changed. No NSE data acquisition, downstream analytics or deployment has been started.
+**Application implementation:** Phase 1 foundation models, validation boundaries, tests and architecture/configuration documentation are complete on the feature branch. No NSE data acquisition, downstream analytics, live integration or deployment has been started. The draft PR remains unmerged; `main` is unchanged.
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
-| 1 | Foundation and architecture | IN PROGRESS | Provenance-aware models, source-record lineage, reviewed architecture/data dictionary, expanded tests and a pytest CI workflow are present. Architecture boundary review: PASS. Data-model identity review: PASS. Model validation review: PASS. Local mirrored install/test execution: 48 passed. Native GitHub Actions run #23: PASS (Python 3.11.18, 48 passed). Final Phase 1 acceptance review remains outstanding. Draft PR #1 is open, unmerged and leaves `main` unchanged. |
+| 1 | Foundation and architecture | COMPLETED | Architecture/component boundaries, data-model identity/source lineage, runtime model validation, configuration/logging/error/versioning/test conventions and native CI have all passed review. Local mirror: 48 passed. Native GitHub Actions run #23: PASS (Python 3.11.18, 48 passed). All Phase 1 roadmap acceptance criteria are met on the feature branch. Draft PR #1 remains unmerged; `main` is unchanged pending separate release approval. |
 | 2 | NSE data access and source verification | NOT STARTED | Authorised access and historical availability for order/trade and other report families must be verified. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
 | 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
@@ -47,9 +47,22 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 - Additional check: `python -m compileall -q src tests` passed on the same local mirror.
 - CI workflow: `.github/workflows/phase1-tests.yml` runs on pushes to the feature branch and pull requests targeting `main`. Actions are pinned to full commit SHAs for checkout v7.0.1 and setup-python v7.1.0.
 - Native CI: GitHub Actions run #23 (`45779029917`) completed successfully on the PR merge ref. Python 3.11.18 setup and editable package installation succeeded; `python -m pytest -q` reported **48 passed in 0.05s**.
-- PR: [#1 — Phase 1: foundation architecture and data contracts](https://github.com/naveenm2020it-glitch/Support-Resistance/pull/1) is draft and unmerged; it does not change `main`.
-- PR: [#1 — Phase 1: foundation architecture and data contracts](https://github.com/naveenm2020it-glitch/Support-Resistance/pull/1) is draft, unmerged and does not change `main`.
+- PR: [#1 — Phase 1: foundation architecture and data contracts](https://github.com/naveenm2020it-glitch/Support-Resistance/pull/1) remains draft and unmerged; it does not change `main`.
 - Scope limitation: `validate_22_sessions` validates the 22-record sequence for one report family only. It is not the final per-session/per-report coverage and required-field gate.
+
+## Phase 1 final acceptance — 2026-11-26
+
+| Roadmap acceptance criterion | Result | Evidence |
+|---|---|---|
+| Architecture, module boundaries and data flow reviewed | PASS | `docs/ARCHITECTURE.md`, Sections 1–4 and 9 |
+| Identifiers and schemas defined for reports, sessions, contracts and planned derived/order/trade records | PASS | `docs/DATA_DICTIONARY.md`; planned records are explicitly labelled not implemented |
+| Missing values remain distinct from zero | PASS | `ContractObservation` keeps optional fields as `None`; regression tests cover missing versus observed zero |
+| Source lineage can be retained | PASS | Source report SHA-256 and source-record locator are required on each contract observation |
+| Configuration, logging, error handling and versioning conventions defined | PASS | `config/README.md` and `docs/ARCHITECTURE.md`, Section 11 |
+| Existing foundation reviewed and baseline tests executed | PASS | Native GitHub Actions run #23: Python 3.11.18, package installation successful, 48 tests passed |
+| No unimplemented production capability claimed | PASS | Architecture and progress register explicitly identify collectors, source access, archive, analytics, ML and deployment as later phases |
+
+**Phase 1 acceptance: PASS.** Phase 1 is marked COMPLETED on `feature/nifty-seller-intelligence-foundation`. This does not merge the draft PR or approve a production release. Phase 2 remains NOT STARTED.
 
 ## Repository code and work-progress rules
 
@@ -149,9 +162,12 @@ Next action:
 | Model validation data dictionary | `e07ed0196b981b95b63a397eac0c811680119c2b` | Documented runtime field collection and numeric constraints. |
 | CI action pinning and bounded runtime | `0d3c33617c1e21b2695adfe3434335831f8fcca3` | Pinned checkout/setup-python to full SHAs and added a 10-minute job limit. |
 | Native GitHub Actions run #23 | `45779029917` | PR merge-ref run passed on Python 3.11.18; package install succeeded and pytest reported 48 passed. |
+| Configuration/operations standards | `5fa310d0f7e95fd329141069016c74e68d03720c` | Added TOML, secret handling, logging, error, versioning and test conventions in `config/README.md`. |
+| README configuration link | `849681fa1ab8c0e15f2beab8cabacf5b1f904d84` | Linked the configuration/operating standards. |
+| Final architecture conventions review | `076aa102eac6ccdc2da28ee26d6ec76d9b9d6e89` | Recorded PASS for configuration, logging, error handling, versioning, testing and native CI evidence.
 
-**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS.
+**Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS; (5) configuration, logging, error handling, versioning and test conventions — PASS; (6) final Phase 1 acceptance review — PASS.
 
-**Next action:** Perform the final Phase 1 acceptance review against `docs/IMPLEMENTATION_ROADMAP.md` and the approved requirements. Do not merge PR #1; `main` remains unchanged pending separate approval.
+**Next action:** Phase 2 may be planned only after separate authorisation. Keep PR #1 draft/unmerged and `main` unchanged until a separate merge/release instruction.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
