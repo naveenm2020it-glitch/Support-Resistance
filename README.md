@@ -11,6 +11,7 @@ A provenance-first NIFTY options research application. It analyses multiple CE/P
 - [12-phase implementation roadmap](docs/IMPLEMENTATION_ROADMAP.md)
 - [Current phase progress register](docs/PHASE_PROGRESS.md)
 - [Phase 2 NSE source catalogue and access verification](docs/PHASE2_SOURCE_CATALOGUE.md)
+- [Free-source EOD operating mode and ML limits](docs/FREE_SOURCE_MODE.md)
 - [Development and data workflow](docs/WORKFLOW.md)
 - [Data policy](docs/DATA_POLICY.md)
 
@@ -18,7 +19,7 @@ A provenance-first NIFTY options research application. It analyses multiple CE/P
 
 The project is developed phase by phase on `feature/nifty-seller-intelligence-foundation`. Source code, tests, safe configuration templates, technical documentation and working progress are stored in this repository.
 
-The progress register records each phase's status, blockers, changed files, commit references, test evidence and acceptance decision. Phase 1 is complete; Phase 2 source/access verification is in progress. The Phase 2 catalogue records official NSE sources and unresolved NDAL entitlement/sample requirements. No automated collector or market-data integration is currently implemented. Code being committed does not by itself mean that a phase is complete.
+The progress register records each phase's status, blockers, changed files, commit references, test evidence and acceptance decision. Phase 1 is complete; Phase 2 is in progress. The user selected a no-subscription EOD file-import direction. See the free-source mode document for NSE research eligibility, automated-download restrictions, ML scope and disabled order-flow capabilities. No live feed, automated NSE public-page collector or market-data integration is currently implemented. Code being committed does not by itself mean that a phase is complete.
 
 `main` remains unchanged until separately approved. The roadmap is planning documentation and does not by itself authorise implementation or deployment.
 
