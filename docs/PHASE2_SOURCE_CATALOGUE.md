@@ -1,6 +1,6 @@
 # Phase 2 — NSE Source Catalogue and Access Verification
 
-**Status:** IN PROGRESS — official source discovery completed for the first pass; entitlement and sample-data verification remain open.  
+**Status:** IN PROGRESS — first-pass official source discovery is complete. User selected no-subscription/free-source EOD mode; data-use eligibility and sample/schema validation remain open. See `docs/FREE_SOURCE_MODE.md`.  
 **Research date:** 2026-11-26  
 **Repository:** `naveenm2020it-glitch/Support-Resistance`  
 **Branch:** `feature/nifty-seller-intelligence-foundation`  
@@ -24,6 +24,31 @@ The F&O order/trade product is the critical dependency for the planned event-flo
 The public NSE option-chain page provides a current contract/expiry selection and CSV download. The reviewed page does not expose a historical analysis-date control. This is not proof that NDAL has no separately licensed historical snapshot product; that question remains open and must be put to NDAL.
 
 **Phase 2 is not complete.** No paid subscription, entitlement, sample file, report-by-date coverage, schema parser, or source integration has been tested in this first-pass research. Do not implement an automated public-page downloader. Manual downloads from official report pages may be used only through their permitted user workflow; automated collection must wait for an explicitly authorised access method.
+
+## 1A. User-selected no-subscription route and NSE research-data policy
+
+The user confirmed on 2026-11-26 that no NDAL subscription is held and instructed the project to use free official source reports where permitted. The current design direction is **manual user download of public EOD report files followed by local import**, not an automated NSE website feed. The paid NDAL subscription route is not being pursued under the current instruction.
+
+NSE's Data List Under the NSE Data Sharing Policy for Research and Analysis identifies the following Equity Derivatives sources in its first-basket research-data list:
+- Contract-wise Price Volume Data.
+- Daily/monthly F&O report archives, with examples including bhavcopy, client-category trading reports, market activity, daily settlement prices and open-interest data.
+- Contract specifications / contracts available for trading.
+
+The same NSE document separately labels **First Basket (Voluminous data; >2 GB; Chargeable)** and includes:
+- Historical end-of-day data, including bhavcopy information for F&O.
+- Historical tick-by-tick trades and orders without client and broker information.
+
+Its footnote describes tick-by-tick historical data as data pertaining to six months before the date of request or earlier. Thus the large historical EOD/tick-by-tick datasets must not be treated as free.
+
+NSE's disclaimer, updated 6 November 2026, states that no-cost research-oriented data up to the aggregate 2 GB threshold is restricted to individuals from accredited academic institutions, recognised research organisations and think tanks, and excludes commercial, speculative or investigative purposes. NSE's research initiative page states that data supplied for research is strictly academic and non-commercial; it provides a Data Seeking Request route at `nseri@nse.co.in`. The project has not established institutional eligibility or received such approval.
+
+The NSE website Terms of Use prohibit systematic or automated data collection, including scraping, data mining, data extraction and data harvesting. Accordingly:
+- Do not build scheduled downloads, scrapers, reverse-engineered API calls, browser automation or cookie/session workarounds for the NSE public report UI.
+- A file-based importer may process files supplied by a user, but that does not by itself establish that the user's intended trading/ML use is licensed.
+- Before using the reports in an operational speculative/trading signal or model, obtain written confirmation from NSE that the selected source, retention, analysis and intended use are permitted.
+- If the project is genuinely eligible academic/non-commercial research, follow the formal NSE research request process and any NDA/reporting requirements.
+
+The practical EOD feature scope and disabled order-flow capabilities are recorded in `docs/FREE_SOURCE_MODE.md`.
 
 ## 2. Source and access catalogue
 
@@ -188,6 +213,10 @@ All references below are official NSE / NSE Data & Analytics sources. They estab
 9. [NSE Data & Info Vending](https://www.nseindia.com/static/nse-data-and-analytics/data-information-vending) — NSE Data & Analytics product categories and current tariff access. [Domestic tariff effective 1 April 2026 (PDF)](https://nsearchives.nseindia.com//web/mediaattachment/2026-04/Download_Pricing_file_-_Domestic_clients_20260424122229.pdf) — standard EOD/Historical F&O Order & Trade, trade-only and educational/researcher rates; all prices subject to stated conditions/taxes.
 10. [NSE Option Chain](https://www.nseindia.com/option-chain) — public current option-chain interface reviewed; it does not itself establish historical-date archive coverage.
 11. [NSE FPI FAQs](https://nsearchives.nseindia.com/web/sites/default/files/inline-files/FPI%20FAQs_Brochure.pdf) — published historical O&T / historical trade date-range guidance and description of market-data levels. Confirm current F&O terms with NDAL rather than treating the FAQ as a subscription contract.
+12. [NSE Data List Under the NSE Data Sharing Policy for Research and Analysis (28 July 2025)](https://nsearchives.nseindia.com/web/sites/default/files/inline-files/Data%20list%20under%20NSE%20Data%20Sharing%20Policy%20for%20Research%20and%20Analysis_20250728.pdf) — free-research first basket includes F&O contract-wise price-volume and daily/monthly report archives; >2 GB historical EOD and tick-by-tick data are separately chargeable.
+13. [NSE Disclaimer](https://www.nseindia.com/static/nse-disclaimer) — no-cost research-oriented data (up to 2 GB aggregate) is restricted to eligible academic/research institutions and excludes commercial/speculative/investigative purposes; updated 6 November 2026.
+14. [NSE Research Initiatives](https://www.nseindia.com/static/research/research-initiatives) — research data is limited to academic/non-commercial use and describes the Data Seeking Request process.
+15. [NSE Terms of Use](https://www.nseindia.com/static/nse-terms-of-use) — prohibits systematic or automated data collection on NSE website/mobile application.
 
 ## 9. Phase boundary
 
