@@ -40,7 +40,7 @@ jobs:
           trap 'rm -rf "$DOWNLOAD_DIR"' EXIT
 
           echo "Downloading: $REPORT_URL"
-          curl --fail --location --show-error --retry 2 --retry-delay 2 --connect-timeout 20 --max-time 120 --output "$REPORT_PATH" "$REPORT_URL"
+          curl --http1.1 --fail --location --show-error --retry 2 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 120 --output "$REPORT_PATH" "$REPORT_URL"
           test -s "$REPORT_PATH"
           echo "Downloaded bytes: $(wc -c < "$REPORT_PATH")"
           file "$REPORT_PATH"
