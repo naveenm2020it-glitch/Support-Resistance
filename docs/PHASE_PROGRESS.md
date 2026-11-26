@@ -4,7 +4,8 @@
 **Working branch:** `feature/nifty-seller-intelligence-foundation`  
 **Roadmap:** `docs/IMPLEMENTATION_ROADMAP.md`  
 **Requirements:** `docs/REQUIREMENTS.md`  
-**Phase 2 source catalogue:** `docs/PHASE2_SOURCE_CATALOGUE.md`
+**Phase 2 source catalogue:** `docs/PHASE2_SOURCE_CATALOGUE.md`  
+**Free-source mode:** `docs/FREE_SOURCE_MODE.md`
 
 ## Status definitions
 
@@ -22,14 +23,14 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 **As of:** 2026-11-26  
 **Overall status:** PHASE 1 COMPLETED; PHASE 2 IN PROGRESS ON THE FEATURE BRANCH; PR/RELEASE APPROVAL IS SEPARATE  
 **Implementation authorisation:** Phase 1 is completed. The user explicitly authorised Phase 2 on 2026-11-26. Phases 3–12 are not authorised by that instruction.  
-**Application implementation:** Phase 1 foundation is complete. Phase 2 is limited to official source discovery, schema/field review, access and entitlement verification, and permitted sample validation. No data collector, automated public-site access, historical archive, downstream analytics, live integration or deployment has been implemented. The draft PR remains unmerged; `main` is unchanged.
+**Application implementation:** Phase 1 foundation is complete. The user confirmed there is no NDAL subscription and selected official EOD reports as the zero-subscription direction. The technical target is manual user-supplied EOD file import, not an automated NSE website feed. Persistent storage and ML/trading use remain gated on written data-use permission; no source files have been imported. No data collector, historical archive, downstream analytics, live integration or deployment has been implemented. The draft PR remains unmerged; `main` is unchanged.
 
 | Phase | Name | Status | Current note / dependency |
 |---|---|---|---|
 | 1 | Foundation and architecture | COMPLETED | Architecture/component boundaries, data-model identity/source lineage, runtime model validation, configuration/logging/error/versioning/test conventions and native CI have all passed review. Local mirror: 48 passed. Native GitHub Actions run #23: PASS (Python 3.11.18, 48 passed). All Phase 1 roadmap acceptance criteria are met on the feature branch. Draft PR #1 remains unmerged; `main` is unchanged pending separate release approval. |
-| 2 | NSE data access and source verification | IN PROGRESS | First-pass official NSE source catalogue documented in `docs/PHASE2_SOURCE_CATALOGUE.md`. Project NDAL entitlement, permitted samples, UDiFF export schema, historical option-chain availability and order/trade reconstruction remain unverified. |
+| 2 | NSE source and usage-rights verification | IN PROGRESS | User has no NDAL subscription and selected a no-subscription EOD file-import design. Official report families and limits are documented in `docs/FREE_SOURCE_MODE.md` and `docs/PHASE2_SOURCE_CATALOGUE.md`. Written permission for storage/ML/trading use and permitted real samples/schema validation remain open. Paid O&T, historical tick data and intraday order-flow are out of current scope. |
 | 3 | 22-session calendar engine | NOT STARTED | Verified F&O trading calendar and EOD publication status required. |
-| 4 | Automatic historical report collector | NOT STARTED | Depends on Phase 2 access verification and Phase 3 session manifest. |
+| 4 | EOD report file ingestion and validation | NOT STARTED | Depends on Phase 2 permitted-use decision and verified schemas, plus Phase 3 session manifest. Current mode accepts user-supplied files only; no NSE public-page polling or scraper. |
 | 5 | Temporary GitHub storage and five-hour cleanup | NOT STARTED | Artifact lifecycle and deletion timing must be proven; do not assume native retention is five hours. |
 | 6 | Permanent archive and provenance | NOT STARTED | Ubuntu server access or another approved archive must be available. |
 | 7 | Parsing, order/trade linking and validation | NOT STARTED | Depends on source samples and verified report specifications. |
@@ -42,17 +43,22 @@ Do not mark a phase COMPLETED just because files were created or code was commit
 ## Phase 2 execution evidence — 2026-11-26
 
 - User explicitly authorised Phase 2 on 2026-11-26.
+- User confirmed no NSE Data & Analytics subscription and selected free official EOD report sources for the project. The technical choice is user-initiated manual download and local import, not an automatic feed.
+- NSE's Data Sharing Policy identifies F&O contract-wise price/volume and daily/monthly report archives in its freely available research-data basket for non-commercial academic research; historical EOD and tick-by-tick data above 2 GB are separately chargeable. NSE's Research Initiatives page says research data is strictly academic/non-commercial. This does not establish permission for this trading/seller-intelligence project.
+- NSE Terms of Use clauses 8–9 restrict copying/storage and redistribution and prohibit systematic/automated collection. Written permission is required before persistent dataset storage or ML/trading use is treated as approved.
 - Created `docs/PHASE2_SOURCE_CATALOGUE.md` with first-pass official NSE source discovery, source-family matrix, candidate per-session report coverage, known fields, access channels, subscription/entitlement status, unresolved items, NDAL questions and Phase 2 acceptance checklist.
 - Official sources reviewed: NSE All Reports — Derivatives; NSE UDiFF forms/formats page; NSE circular NSE/MSD/60315; NSE Master Data Specification v1.6; NSE historical index data page and NIFTY 50 FAQ; NSE EOD/Historical Data Subscription page; NSE Historical Order & Trade specification v1.19; NSE Data & Info Vending page; NSE Option Chain page; NSE FPI FAQ.
 - First-pass findings: UDiFF Common Bhavcopy Final replaces legacy F&O Bhavcopy CSV/Common Bhavcopy from 2024-07-08; daily F&O-MII contract files are listed; NIFTY 50 history is publicly exposed via date-range CSV; historical contract-wise price/volume and participant OI/volume reports are listed.
 - Order/trade: NDAL describes EOD Order & Trade delivery via SFTP and historical O&T via its online platform. Specification v1.19 describes F&O Trim and Full variants; documented delays for Full orders and trades differ (90 and 30 calendar days). NSE FPI FAQ states historical F&O O&T from Jan 2008 and separate historical trade data from Jan 1994; actual subscribed-product coverage must be confirmed with NDAL.
 - Historical option-chain/quotes: reviewed public option-chain UI has no historical analysis-date selector. NSE FPI FAQ lists F&O market-data classes for Level 1 (best bid/ask) and Level 2 (best five bid/ask), but not F&O Level 3 or MTBT; the FAQ does not define a historical snapshot file, cadence or coverage period. A specific NDAL historical quote/snapshot product still needs verification.
-- Entitlement/sample status: no project NDAL subscription, agreement, credentials, project quote, permitted sample files or 22-date report set was evidenced or tested. No NDAL enquiry was sent. No report bytes were downloaded or stored in Git.
+- Subscription status: user confirmed no NDAL subscription; paid O&T and historical tick-by-tick products are out of the current no-subscription scope. No subscription enquiry has been sent.
+- Data-rights status: written permission for persistent storage, ML training and trading/seller-signal use has not been obtained. The academic/non-commercial research-data route is not assumed to cover this project.
+- Sample status: no permitted sample files or 22-date report set were provided or tested. No report bytes were downloaded or stored in Git.
 - Published domestic tariff: NSE's tariff effective 2026-04-01 lists F&O Historical Order & Trade Data at ₹12,50,000/year for a single site (₹31,30,000 global/multiple sites), and separate F&O Historical Trade Data only at ₹1,10,000/year. The educational/student-researcher tariff lists ₹6,25,000 for F&O Historical Order & Trade and ₹22,000 for trade-only, but eligibility is not established. Prices exclude taxes/levies; each additional delivery channel adds 50% of the fixed fee. These are list prices, not a project-specific quotation.
 - UDiFF schema: NSE publishes UDiFF catalogue v4.0 and a trade/Bhavcopy format workbook; the linked XLSX could not be inspected in this research pass. Exact UDiFF field mapping remains open; no schema was inferred from the retired format.
 - Regression CI: GitHub Actions run #50 for documentation commit `c33e2656c9137fab8128840c98ab5ad5e605ad49` completed successfully on Python 3.11.18; editable install succeeded and `python -m pytest -q` reported 48 passed in 0.10s. This is a foundation regression check only; it does not validate Phase 2 source files or NDAL data.
 - Compliance: no automated NSE public-page scraping, access-control bypass, or historical data substitution was used.
-- **Current Phase 2 result:** IN PROGRESS. Source discovery is partially satisfied; subscription/entitlement, current schema verification, sample validation and O&T reconstruction acceptance remain open. See the source catalogue for the detailed checklist.
+- **Current Phase 2 result:** IN PROGRESS. The no-subscription technical direction is selected and the official EOD source inventory is documented. Remaining gates are written confirmation of permitted data storage/ML/trading use, receipt of permitted UDiFF/index/contract-wise EOD samples, exact field/schema validation, and confirmation of available historical date coverage. No automated NSE feed, O&T reconstruction, or historical option-chain replay is in scope. See `docs/FREE_SOURCE_MODE.md` and the source catalogue.
 
 ## Phase 1 execution evidence — 2026-11-26
 
@@ -190,10 +196,16 @@ Next action:
 | Architecture Phase 2 status | `f1aaecfbf2d6499fd7acb70dbb81acb6f6f0ea3c` | Reflected the source verification work and open entitlement/sample gates. |
 | README Phase 2 link | `4675f8e3440c0dd3f299ed1f95ffda60dd2eabdb` | Added the source catalogue and current Phase 2 status to project documentation links. |
 | Phase 2 progress register cleanup | `3d01b736dca0fb229cebb32e91f77cac8478e564` | Added the catalogue link and placed the Phase 2 source-catalogue entry in the change-history table. |
+| Phase 2 free-source policy | `38f5636a8027a13a24e952e9992f538b6a108239` | Added NSE research-data basket, chargeable voluminous-data, no-scraping and academic/non-commercial rights findings. |
+| Free-source operating mode | `b7e7aa977aca0e040673e8d5640ee468a1700c3b` | Defined the no-subscription manual EOD import direction and corrected storage/ML permission gate. |
+| Data policy rights update | `1299ec2b278b264a60641f969028733bf564acd8` | Tightened permitted-use, storage and ML governance for public EOD report files. |
+| Requirements free-source update | `64cf4c69bd1d3cf6ca449c35e236d5d60e8d123c` | Added intended-use permission gate and EOD-only feature boundaries to approved requirements. |
+| Roadmap manual EOD import update | `2feb03914b7468b1090e5f545c356806f7f3c5db` | Replaced automatic collector scope with manual EOD file ingestion and validation. |
+| Workflow no-subscription update | `f66948138ef3d2f550ec1ae61baa9050b3d3b548` | Changed data workflow and analysis evidence hierarchy to the permitted manual EOD mode. |
 
 **Completed review items:** (1) architecture/component boundaries — PASS; (2) data-model identity and source lineage — PASS; (3) runtime model validation — PASS; (4) native GitHub Actions verification — PASS; (5) configuration, logging, error handling, versioning and test conventions — PASS; (6) final Phase 1 acceptance review — PASS.
 
-**Next action:** Continue Phase 2 only: obtain the official UDiFF format workbook and permitted EOD samples; confirm whether an NDAL F&O subscription already exists or obtain official product/price/terms information; request permitted Trim order/trade samples and historical-chain coverage details. Keep PR #1 draft/unmerged and `main` unchanged until a separate merge/release instruction.
+**Next action:** Continue Phase 2 only: obtain written NSE clarification covering the project's EOD report download, persistent storage, ML training, trading/seller-signal and dashboard use; then obtain permitted UDiFF, matching F&O-MII master, historical contract-wise price-volume and NIFTY index sample files for schema inspection. Do not build a public-page scraper or claim a live feed. Keep PR #1 draft/unmerged and `main` unchanged until a separate merge/release instruction.
 
 This register must be updated in the same repository whenever phase status materially changes. Do not claim work or tests that have not actually been performed.
 
