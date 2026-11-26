@@ -150,9 +150,9 @@ The NSE Data & Analytics domestic tariff sheet effective 2026-04-01 (page update
 
 Published prices exclude applicable taxes/levies. The tariff also specifies an additional 50% of the product fixed fee for each additional delivery channel. The standard and educational tariffs are different categories; written NDAL confirmation is required before relying on the educational rate. The separate 1-minute/5-minute snapshot product fees are not evidence that a historical options-chain archive is included.
 
-## 6. NDAL questions that must be answered before source integration
+## 6. Optional future paid-source questions — not in the current scope
 
-The following request should be sent through the official subscription contact. This document records the questions; **no enquiry has been sent on the user's behalf**.
+The user selected a no-subscription EOD route. The following questions are retained only as a reference in case the user separately reconsiders paid NDAL data in the future. They are not prerequisites for the current EOD-only plan, and **no enquiry has been sent on the user's behalf**.
 
 1. Which F&O products are available for this use: Trim EOD order events, Trim EOD trades, Full historical orders, Full historical trades, historical trade-only data, and historical market-data/quote snapshots?
 2. What are the exact earliest and latest available F&O dates for each product, including any instrument/contract exclusions and the practical delay from trade date?
