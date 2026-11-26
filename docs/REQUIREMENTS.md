@@ -313,3 +313,56 @@ All phase implementation code, tests, configuration and technical documentation 
 Raw NSE reports, credentials and secrets must not be committed to Git history.
 
 **This document records requirements only.** Uploading it does not authorise implementation, downloading NSE reports, changing application code, deploying services, creating scheduled workflows or modifying any other repository files. Those activities require a separate instruction.
+
+
+## 17. User-selected no-subscription / free-source mode — 2026-11-26
+
+**Decision:** The user has confirmed that no NSE Data & Analytics subscription is held and has directed the project to use free official source reports where permitted. The project must not assume a paid NDAL entitlement or implement a paid O&T integration under this direction.
+
+### 17.1 Operating model
+
+- Use official NSE/NIFTY Indices EOD reports that are available for permitted user-initiated download, subject to the applicable usage rights.
+- Ingest user-supplied original files through a local/file-import workflow; preserve original bytes and provenance.
+- Do not poll, scrape, automate browser downloads from, or reverse-engineer NSE public report pages. NSE's website Terms of Use prohibit systematic/automated data collection.
+- Do not call this a live feed. The no-subscription source mode is a manual, file-based EOD import.
+- A future authorised/licensed feed can be considered only after a separate user decision and written access/usage rights.
+
+### 17.2 Eligible EOD input families
+
+Candidate official inputs, subject to sample/schema validation:
+1. F&O UDiFF Common Bhavcopy Final.
+2. Daily F&O-MII contract master matching the report date.
+3. Historical contract-wise price-volume data.
+4. NIFTY 50 historical index CSV.
+5. F&O participant-wise OI and participant-wise trading-volume reports as optional broad participant context.
+6. Other official daily/monthly F&O reports only when their schema and purpose are verified.
+
+The exact field map, null semantics, scales, units and historical date coverage must be established from actual permitted sample files. Do not infer a current UDiFF schema from a discontinued format.
+
+### 17.3 Data-use eligibility gate
+
+NSE's current disclaimer states that its no-cost research-oriented data route (up to an aggregate 2 GB) is restricted to individuals from accredited academic institutions, recognised research organisations and think tanks, and excludes commercial, speculative or investigative purposes. The NSE research page also limits research data to academic and non-commercial use. The user/project has not established eligibility or received approval.
+
+Therefore:
+- Do not assume the project's trading/seller-signal use qualifies for NSE's free research-data scheme.
+- Before using downloaded reports in an operational trading/signal product or training such a model, obtain written NSE confirmation that the specific access, storage and intended use are permitted.
+- If the work is eligible academic/non-commercial research, follow NSE's Data Seeking Request process and any NDA/reporting requirements.
+- NSE lists historical EOD and tick-by-tick historical datasets above 2 GB in a separate chargeable voluminous-data basket. Do not claim those large datasets are free.
+- Public visibility or a download button does not authorise scraping, redistribution or broader reuse.
+
+### 17.4 Feature boundary
+
+The no-subscription EOD dataset may support contract-level EOD CE/PE price, settlement, traded activity, turnover, OI/change-in-OI where supplied, matching contract identity, NIFTY index context, broad participant aggregates, qualified EOD support/resistance research and offline EOD ML after the longer-history/rights/validation gates pass.
+
+It does not support order-book replay, order additions/modifications/cancellations, bid/ask depth history, aggressor-side flow, passive seller replenishment, individual seller identity, or intraday panic-exit detection. Those outputs must be disabled or explicitly unavailable. OI and EOD price/volume are aggregate positioning proxies, not proof of seller identity, new writing, covering or intent.
+
+A public current option-chain CSV is not a historical archive. Do not backfill past snapshots from current data or bhavcopy.
+
+### 17.5 ML eligibility
+
+- The 22-session 17 + 4 + 1 window is for analysis, not a default training-set size.
+- ML must wait for a sufficiently long and consistent historical EOD dataset, an approved target definition, source-use permission, chronological splits and out-of-sample evaluation.
+- No model may be trained from data that has an unresolved acquisition/use-rights basis.
+- Keep missing fields absent; never synthetically reconstruct historic IV, bid/ask, depth or order events.
+
+The implementation details and source restrictions are recorded in [FREE_SOURCE_MODE.md](FREE_SOURCE_MODE.md).
