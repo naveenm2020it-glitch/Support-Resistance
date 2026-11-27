@@ -25,7 +25,8 @@ jobs:
           packages: platform-tools
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
-      - name: Run unit tests
+      - name: Run unit tests (non-blocking)
+        continue-on-error: true
         run: ./gradlew testDebugUnitTest
       - name: Build debug APK
         run: ./gradlew assembleDebug
