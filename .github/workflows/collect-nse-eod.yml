@@ -225,6 +225,7 @@ jobs:
                   break
               except Exception as exc:
                   report["index_report"].setdefault("attempt_errors", []).append(str(exc))
+            if index_saved: break
           if not index_saved:
               # Exact NSE Indices historical export endpoint was unavailable; collect the
               # official NSE daily snapshot originals as a clearly labelled fallback.
@@ -281,7 +282,7 @@ jobs:
                   "source_directory":"nse_daily_snapshots/",
                   "series_filename":"NIFTY_50_Official_Daily_Snapshot_Series_2026-10-27_to_2026-11-27.csv" if snapshot_rows else None,
                   "records_downloaded":len(snapshot_rows),
-                  "expected_dates_missing":sorted(set(EXPECTED)-{row.get("Index Date") for row in snapshot_rows}),
+                  "expected_dates_missing":sorted(set(EXPECTED)-{parse_date(next((v for k,v in row.items() if "date" in k.lower()), "")) for row in snapshot_rows}),
                   "failures":snapshot_failures,
               }
 
