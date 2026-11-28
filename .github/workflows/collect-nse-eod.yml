@@ -1,0 +1,300 @@
+name: Collect Official NSE EOD Research Files
+
+on:
+  push:
+    branches:
+      - data-collection/nse-eod-20261127
+    paths:
+      - .github/workflows/collect-nse-eod.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - name: Checkout collection branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download and verify official NSE reports
+        id: collect
+        run: |
+          python - <<'PY'
+          import csv, datetime as dt, hashlib, io, json, os, pathlib, re, time, zipfile
+          import requests
+
+          OUT = pathlib.Path("nse_eod_collection")
+          OUT.mkdir(exist_ok=True)
+          FNO = OUT / "fo_udiff"
+          FNO.mkdir(exist_ok=True)
+
+          SESSIONS = [
+              "2026-10-28","2026-10-29","2026-10-30",
+              "2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06",
+              "2026-11-08","2026-11-09","2026-11-11","2026-11-12","2026-11-13",
+              "2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20",
+              "2026-11-23","2026-11-25","2026-11-26","2026-11-27"
+          ]
+          BUFFER = "2026-10-27"
+          EXPECTED = [BUFFER] + SESSIONS
+          REQUIRED = {
+              "trade_date": ["TradDt", "BizDt"],
+              "symbol": ["TckrSymb"],
+              "instrument_type": ["FinInstrmTp"],
+              "expiry": ["FininstrmActlXpryDt", "XpryDt"],
+              "strike": ["StrkPric"],
+              "option_type": ["OptnTp"],
+              "open_interest": ["OpnIntrst"],
+              "change_in_oi": ["ChngInOpnIntrst"],
+              "volume": ["TtlTradgVol"],
+              "trade_count": ["TtlNbOfTxs"],
+              "market_lot": ["NewBrdLotQty"]
+          }
+          report = {
+              "source_policy": "Official NSE / NSE Indices hosts only; no third-party data",
+              "analysis_window": SESSIONS,
+              "buffer_session": BUFFER,
+              "fo_reports": [],
+              "index_report": {},
+              "optional_reports": "India VIX, participant-wise OI and participant-wise volume intentionally deferred",
+          }
+
+          s = requests.Session()
+          headers = {
+              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36",
+              "Accept": "*/*",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Referer": "https://www.nseindia.com/all-reports-derivatives",
+              "Connection": "keep-alive",
+          }
+          s.headers.update(headers)
+          for warm in ["https://www.nseindia.com/", "https://www.nseindia.com/all-reports-derivatives"]:
+              try: s.get(warm, timeout=30)
+              except Exception: pass
+
+          def parse_date(value):
+              value = str(value or "").strip()
+              for fmt in ("%Y-%m-%d", "%d-%b-%Y", "%d-%B-%Y", "%d/%m/%Y", "%d-%m-%Y", "%d%m%Y"):
+                  try: return dt.datetime.strptime(value, fmt).date().isoformat()
+                  except ValueError: pass
+              return None
+
+          def sha256(data):
+              return hashlib.sha256(data).hexdigest()
+
+          for day in EXPECTED:
+              ymd = day.replace("-", "")
+              filename = f"BhavCopy_NSE_FO_0_0_0_{ymd}_F_0000.csv.zip"
+              urls = [
+                  f"https://nsearchives.nseindia.com/content/fo/{filename}",
+                  f"https://archives.nseindia.com/content/fo/{filename}",
+                  f"https://www.nseindia.com/content/fo/{filename}",
+              ]
+              entry = {"date": day, "filename": filename, "status": "missing"}
+              for url in urls:
+                  try:
+                      response = s.get(url, timeout=60)
+                      response.raise_for_status()
+                      payload = response.content
+                      if not zipfile.is_zipfile(io.BytesIO(payload)):
+                          raise ValueError("Response is not a valid ZIP archive")
+                      with zipfile.ZipFile(io.BytesIO(payload)) as zf:
+                          bad = zf.testzip()
+                          if bad: raise ValueError(f"ZIP CRC failure: {bad}")
+                          csv_names = [n for n in zf.namelist() if n.lower().endswith(".csv")]
+                          if len(csv_names) != 1:
+                              raise ValueError(f"Expected one CSV inside ZIP; found {len(csv_names)}")
+                          raw = zf.read(csv_names[0])
+                      text = raw.decode("utf-8-sig")
+                      reader = csv.DictReader(io.StringIO(text))
+                      headers_found = reader.fieldnames or []
+                      aliases = {k: next((a for a in v if a in headers_found), None) for k,v in REQUIRED.items()}
+                      missing = [k for k,v in aliases.items() if not v]
+                      if missing: raise ValueError("Missing required columns: " + ", ".join(missing))
+                      rows = list(reader)
+                      dates = sorted({parse_date(row.get(aliases["trade_date"])) for row in rows if parse_date(row.get(aliases["trade_date"]))})
+                      if dates != [day]:
+                          raise ValueError(f"Internal trade date mismatch: expected {day}, found {dates[:8]}")
+                      nifty_options = [row for row in rows if row.get(aliases["symbol"], "").strip().upper() == "NIFTY" and row.get(aliases["option_type"], "").strip().upper() in ("CE","PE")]
+                      if not nifty_options: raise ValueError("No NIFTY CE/PE option rows found")
+                      lot_values = sorted({str(row.get(aliases["market_lot"], "")).strip() for row in nifty_options if str(row.get(aliases["market_lot"], "")).strip()})
+                      target = FNO / filename
+                      target.write_bytes(payload)
+                      entry.update({
+                          "status":"downloaded_and_structurally_verified",
+                          "source_url":url,
+                          "size_bytes":len(payload),
+                          "sha256":sha256(payload),
+                          "internal_trade_dates":dates,
+                          "csv_member":csv_names[0],
+                          "row_count":len(rows),
+                          "nifty_ce_pe_rows":len(nifty_options),
+                          "columns":headers_found,
+                          "column_mapping":aliases,
+                          "observed_new_board_lot_values":lot_values,
+                          "oi_unit_note":"Original OpnIntrst and ChngInOpnIntrst values retained unchanged. NewBrdLotQty recorded separately; no unit conversion applied during collection."
+                      })
+                      break
+                  except Exception as exc:
+                      entry.setdefault("attempt_errors", []).append({"url":url,"error":str(exc)})
+              report["fo_reports"].append(entry)
+              time.sleep(1.2)
+
+          # Official NSE Indices historical-index endpoint; try documented form variants,
+          # retain raw official response, and export CSV only when dated NIFTY 50 rows are present.
+          idx_url = "https://www.niftyindices.com/Backpage/getHistoricaldataDBtoString"
+          idx_headers = {
+              **headers,
+              "Origin":"https://www.niftyindices.com",
+              "Referer":"https://www.niftyindices.com/reports/historical-data",
+              "Content-Type":"application/json; charset=utf-8",
+              "Accept":"application/json, text/javascript, */*; q=0.01",
+          }
+          candidates = [
+              {"name":"NIFTY 50","startDate":"27-10-2026","endDate":"27-11-2026"},
+              {"name":"NIFTY 50","startDate":"27-Oct-2026","endDate":"27-Nov-2026"},
+              {"indexName":"NIFTY 50","fromDate":"27-10-2026","toDate":"27-11-2026"},
+              {"indexName":"NIFTY 50","startDate":"27-10-2026","endDate":"27-11-2026"},
+          ]
+          index_saved = False
+          for payload in candidates:
+              try:
+                  resp = requests.post(idx_url, json=payload, headers=idx_headers, timeout=60)
+                  resp.raise_for_status()
+                  raw_text = resp.text
+                  (OUT / "nifty50_historical_index_raw_response.txt").write_text(raw_text, encoding="utf-8")
+                  try: data = resp.json()
+                  except Exception: data = raw_text
+                  if isinstance(data, dict) and "d" in data:
+                      data = data["d"]
+                      if isinstance(data, str):
+                          try: data = json.loads(data)
+                          except Exception: pass
+                  def find_records(obj):
+                      if isinstance(obj, list) and obj and all(isinstance(x, dict) for x in obj): return obj
+                      if isinstance(obj, dict):
+                          for value in obj.values():
+                              found = find_records(value)
+                              if found: return found
+                      if isinstance(obj, str):
+                          try: return find_records(json.loads(obj))
+                          except Exception: return []
+                      return []
+                  records = find_records(data)
+                  if not records: continue
+                  keys = list(dict.fromkeys(k for row in records for k in row.keys()))
+                  date_keys = [k for k in keys if "date" in k.lower() or k.lower() in ("trddt","trad_dt","tradingdate")]
+                  valid_dates = set()
+                  for row in records:
+                      for key in date_keys:
+                          d = parse_date(row.get(key))
+                          if d: valid_dates.add(d)
+                  if not valid_dates: continue
+                  csv_path = OUT / "NIFTY_50_Historical_Index_Data_2026-10-27_to_2026-11-27.csv"
+                  with csv_path.open("w", newline="", encoding="utf-8-sig") as f:
+                      writer = csv.DictWriter(f, fieldnames=keys, extrasaction="ignore")
+                      writer.writeheader()
+                      writer.writerows(records)
+                  report["index_report"] = {
+                      "status":"downloaded_from_official_nse_indices_endpoint",
+                      "source_url":idx_url,
+                      "request_payload":payload,
+                      "record_count":len(records),
+                      "date_columns":date_keys,
+                      "observed_dates":sorted(valid_dates),
+                      "expected_dates_missing":sorted(set(EXPECTED)-valid_dates),
+                      "filename":csv_path.name,
+                      "sha256":sha256(csv_path.read_bytes()),
+                  }
+                  index_saved = True
+                  break
+              except Exception as exc:
+                  report["index_report"].setdefault("attempt_errors", []).append(str(exc))
+          if not index_saved:
+              report["index_report"].update({
+                  "status":"not_retrieved",
+                  "reason":"Official NSE Indices endpoint did not return a parseable, dated NIFTY 50 series for the requested range. No substitute dataset was used."
+              })
+
+          downloaded = sum(1 for x in report["fo_reports"] if x["status"] == "downloaded_and_structurally_verified")
+          missing = [x["date"] for x in report["fo_reports"] if x["status"] != "downloaded_and_structurally_verified"]
+          report["summary"] = {
+              "fno_expected":len(EXPECTED),
+              "fno_downloaded_and_verified":downloaded,
+              "fno_missing_or_failed":missing,
+              "index_csv_status":report["index_report"].get("status"),
+              "all_mandatory_files_present": downloaded == len(EXPECTED) and index_saved
+          }
+          (OUT / "collection_manifest.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+          lines = [
+              "# NSE EOD collection report",
+              "",
+              f"- F&O files expected: {len(EXPECTED)}",
+              f"- F&O files downloaded and structurally verified: {downloaded}",
+              f"- F&O files missing/failed: {', '.join(missing) if missing else 'None'}",
+              f"- NIFTY 50 historical index CSV: {report['index_report'].get('status')}",
+              "",
+              "## Verification limits",
+              "- ZIP CRC and CSV structure checked for each retrieved F&O file.",
+              "- Internal trade date checked against the requested session.",
+              "- Required UDiFF columns checked, including OI, change in OI, volume, trade count and market lot.",
+              "- Raw OI values were not transformed; lot-size values are recorded separately.",
+              "- This is collection/structural verification only, not seller-pattern analysis.",
+              "- Optional India VIX and participant reports were intentionally not downloaded."
+          ]
+          (OUT / "verification_report.md").write_text("\\n".join(lines)+"\\n", encoding="utf-8")
+          print(json.dumps(report["summary"], indent=2))
+          PY
+
+      - name: Upload collected original files and verification report
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NSE-EOD-Reports-2026-11-27
+          path: nse_eod_collection/
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Mark incomplete mandatory collection as failed
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path("nse_eod_collection/collection_manifest.json")
+          if not p.exists():
+              print("Collection manifest missing")
+              sys.exit(1)
+          data=json.loads(p.read_text())
+          if not data["summary"]["all_mandatory_files_present"]:
+              print(json.dumps(data["summary"], indent=2))
+              sys.exit(1)
+          PY
+
+  delete_artifact_after_five_hours:
+    needs: collect
+    if: always() && needs.collect.outputs.artifact_id != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Keep download available for five hours, then delete it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARTIFACT_ID: ${{ needs.collect.outputs.artifact_id }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          sleep 18000
+          curl --fail-with-body --silent --show-error \
+            -X DELETE \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPOSITORY/actions/artifacts/$ARTIFACT_ID"
