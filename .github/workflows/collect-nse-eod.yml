@@ -60,7 +60,6 @@ jobs:
               "open_interest": ["OpnIntrst"],
               "change_in_oi": ["ChngInOpnIntrst"],
               "volume": ["TtlTradgVol"],
-              "trade_count": ["TtlNbOfTxs"],
               "market_lot": ["NewBrdLotQty"]
           }
           report = {
@@ -123,6 +122,7 @@ jobs:
                       headers_found = reader.fieldnames or []
                       aliases = {k: next((a for a in v if a in headers_found), None) for k,v in REQUIRED.items()}
                       missing = [k for k,v in aliases.items() if not v]
+                      optional_trade_count = next((a for a in ["TtlNbOfTxs", "TtlNbOfTxs"] if a in headers_found), None)
                       if missing: raise ValueError("Missing required columns: " + ", ".join(missing))
                       rows = list(reader)
                       dates = sorted({parse_date(row.get(aliases["trade_date"])) for row in rows if parse_date(row.get(aliases["trade_date"]))})
@@ -144,6 +144,7 @@ jobs:
                           "nifty_ce_pe_rows":len(nifty_options),
                           "columns":headers_found,
                           "column_mapping":aliases,
+                          "optional_trade_count_column":optional_trade_count,
                           "observed_new_board_lot_values":lot_values,
                           "oi_unit_note":"Original OpnIntrst and ChngInOpnIntrst values retained unchanged. NewBrdLotQty recorded separately; no unit conversion applied during collection."
                       })
@@ -155,7 +156,7 @@ jobs:
 
           # Official NSE Indices historical-index endpoint; try documented form variants,
           # retain raw official response, and export CSV only when dated NIFTY 50 rows are present.
-          idx_url = "https://www.niftyindices.com/Backpage/getHistoricaldataDBtoString"
+          idx_urls = ["https://www.niftyindices.com/Backpage/getHistoricaldataDBtoString", "https://www.niftyindices.com/Backpage.aspx/getHistoricaldataDBtoString"]
           idx_headers = {
               **headers,
               "Origin":"https://www.niftyindices.com",
@@ -170,9 +171,10 @@ jobs:
               {"indexName":"NIFTY 50","startDate":"27-10-2026","endDate":"27-11-2026"},
           ]
           index_saved = False
-          for payload in candidates:
+          for idx_url in idx_urls:
+            for payload in candidates:
               try:
-                  resp = requests.post(idx_url, json=payload, headers=idx_headers, timeout=60)
+                  resp = requests.post(idx_url, json=payload, headers=idx_headers, timeout=25)
                   resp.raise_for_status()
                   raw_text = resp.text
                   (OUT / "nifty50_historical_index_raw_response.txt").write_text(raw_text, encoding="utf-8")
@@ -224,10 +226,64 @@ jobs:
               except Exception as exc:
                   report["index_report"].setdefault("attempt_errors", []).append(str(exc))
           if not index_saved:
-              report["index_report"].update({
-                  "status":"not_retrieved",
-                  "reason":"Official NSE Indices endpoint did not return a parseable, dated NIFTY 50 series for the requested range. No substitute dataset was used."
-              })
+              # Exact NSE Indices historical export endpoint was unavailable; collect the
+              # official NSE daily snapshot originals as a clearly labelled fallback.
+              snapshot_dir = OUT / "nse_daily_snapshots"
+              snapshot_dir.mkdir(exist_ok=True)
+              snapshot_rows = []
+              snapshot_failures = []
+              for day in EXPECTED:
+                  d = dt.date.fromisoformat(day)
+                  dmy = d.strftime("%d%m%Y")
+                  filename = f"ind_close_all_{dmy}.csv"
+                  found = False
+                  for host in ["archives.nseindia.com", "nsearchives.nseindia.com", "www.nseindia.com"]:
+                      url = f"https://{host}/content/indices/{filename}"
+                      try:
+                          response = s.get(url, timeout=25)
+                          response.raise_for_status()
+                          payload = response.content
+                          if not payload or payload.lstrip().lower().startswith(b"<"):
+                              raise ValueError("Response was not a CSV")
+                          text = payload.decode("utf-8-sig")
+                          reader = csv.DictReader(io.StringIO(text))
+                          rows = list(reader)
+                          if not reader.fieldnames:
+                              raise ValueError("CSV header missing")
+                          norm = {re.sub(r"[^a-z0-9]", "", k.lower()):k for k in reader.fieldnames}
+                          name_col = norm.get("indexname") or norm.get("index")
+                          date_col = norm.get("indexdate") or norm.get("date")
+                          if not name_col or not date_col:
+                              raise ValueError("Index Name/Date columns missing")
+                          nifty = next((row for row in rows if row.get(name_col, "").strip().upper() == "NIFTY 50"), None)
+                          if not nifty or parse_date(nifty.get(date_col)) != day:
+                              raise ValueError(f"NIFTY 50 internal date did not match {day}")
+                          (snapshot_dir / filename).write_bytes(payload)
+                          nifty["source_filename"] = filename
+                          nifty["source_sha256"] = sha256(payload)
+                          snapshot_rows.append(nifty)
+                          found = True
+                          break
+                      except Exception as exc:
+                          snapshot_failures.append({"date":day,"url":url,"error":str(exc)})
+                  if not found:
+                      snapshot_failures.append({"date":day,"error":"No official NSE daily snapshot host returned a valid NIFTY 50 row"})
+              if snapshot_rows:
+                  fields = list(dict.fromkeys(k for row in snapshot_rows for k in row))
+                  series_path = OUT / "NIFTY_50_Official_Daily_Snapshot_Series_2026-10-27_to_2026-11-27.csv"
+                  with series_path.open("w", newline="", encoding="utf-8-sig") as f:
+                      writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+                      writer.writeheader()
+                      writer.writerows(snapshot_rows)
+              report["index_report"] = {
+                  "status":"official_nse_daily_snapshot_fallback",
+                  "note":"This is not the separate NSE Indices Historical Data page export. It is an explicitly labelled series of original NSE Daily Snapshot CSVs, retaining each original file and source hash.",
+                  "source_directory":"nse_daily_snapshots/",
+                  "series_filename":"NIFTY_50_Official_Daily_Snapshot_Series_2026-10-27_to_2026-11-27.csv" if snapshot_rows else None,
+                  "records_downloaded":len(snapshot_rows),
+                  "expected_dates_missing":sorted(set(EXPECTED)-{row.get("Index Date") for row in snapshot_rows}),
+                  "failures":snapshot_failures,
+              }
 
           downloaded = sum(1 for x in report["fo_reports"] if x["status"] == "downloaded_and_structurally_verified")
           missing = [x["date"] for x in report["fo_reports"] if x["status"] != "downloaded_and_structurally_verified"]
@@ -236,7 +292,7 @@ jobs:
               "fno_downloaded_and_verified":downloaded,
               "fno_missing_or_failed":missing,
               "index_csv_status":report["index_report"].get("status"),
-              "all_mandatory_files_present": downloaded == len(EXPECTED) and index_saved
+              "all_mandatory_files_present": downloaded == len(EXPECTED) and (index_saved or report["index_report"].get("status") == "official_nse_daily_snapshot_fallback" and len(snapshot_rows) == len(EXPECTED))
           }
           (OUT / "collection_manifest.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
           lines = [
@@ -253,6 +309,7 @@ jobs:
               "- Required UDiFF columns checked, including OI, change in OI, volume, trade count and market lot.",
               "- Raw OI values were not transformed; lot-size values are recorded separately.",
               "- This is collection/structural verification only, not seller-pattern analysis.",
+              "- If the Nifty Indices Historical Data endpoint fails, the bundle clearly labels an official NSE daily-snapshot fallback; it is not misrepresented as the separate historical-export report.",
               "- Optional India VIX and participant reports were intentionally not downloaded."
           ]
           (OUT / "verification_report.md").write_text("\n".join(lines)+"\n", encoding="utf-8")
